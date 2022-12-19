@@ -1,5 +1,17 @@
-import { allTokens, Identifier, And, EndStatement, Equal, GreaterThan, LessThan, NumberLiteral, Or, StartStatement } from './lexer';
-import { CstParser, Lexer } from 'chevrotain'
+import {
+    allTokens,
+    Identifier,
+    And,
+    EndStatement,
+    Equal,
+    GreaterThan,
+    LessThan,
+    NumberLiteral,
+    Or,
+    StartStatement,
+    In
+} from "./lexer";
+import { CstParser, Lexer } from "chevrotain";
 export class QlParser extends CstParser {
 
     constructor(options?: any) {
@@ -31,7 +43,9 @@ export class QlParser extends CstParser {
         this.OR([
             { ALT: () => this.CONSUME(GreaterThan) },
             { ALT: () => this.CONSUME(LessThan) },
-            { ALT: () => this.CONSUME(Equal) }
+            { ALT: () => this.CONSUME(Equal) },
+            { ALT: () => this.CONSUME(In) }
+
         ]);
     });
 
