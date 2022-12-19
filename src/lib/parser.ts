@@ -49,13 +49,15 @@ export const parser = new QlParser()
 
 // "input" is a setter which will reset the parser's state.
 export function parseInput(text: string, lexer: Lexer) {
-    const lexingResult = lexer.tokenize(text)
-    parser.input = lexingResult.tokens
-    parser.query$()
+    const lexingResult = lexer.tokenize(text);
+    parser.input = lexingResult.tokens;
+    parser.query$();
 
     if (parser.errors.length > 0) {
         console.error(parser.errors);
-        throw new Error('Failed to parse the input')
+        throw new Error("Failed to parse the input");
     }
+
+    return true;
 }
 
