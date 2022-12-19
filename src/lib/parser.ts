@@ -7,28 +7,27 @@ export class QlParser extends CstParser {
         this.performSelfAnalysis();
     }
 
-    query$ = this.RULE('query$', () => {
-        this.SUBRULE(this.statement$, { LABEL: 'lhs' })
-        this.OPTION(() => {
-            this.SUBRULE1(this.logicalOperators$)
-            this.SUBRULE2(this.statement$, { LABEL: 'rhs' })
-        })
-    })
+    statement$ = this.RULE("statement$", () => {
+        this.CONSUME(StartStatement);
+        this.CONSUME(Identifier);
+        this.SUBRULE(this.subQuery$);
+        this.CONSUME(EndStatement);
+    });
 
-    subQuery$ = this.RULE('subQuery$', () => {
+    subQuery$ = this.RULE("subQuery$", () => {
         this.CONSUME(Identifier);
         this.SUBRULE1(this.propValidationSign$);
         this.CONSUME(NumberLiteral);
-    })
+    });
+    query$ = this.RULE("query$", () => {
+        this.SUBRULE(this.statement$);
+        this.OPTION(() => {
+            this.SUBRULE1(this.logicalOperators$);
+            this.SUBRULE2(this.statement$);
+        });
+    });
 
-    statement$ = this.RULE('statement$', () => {
-        this.CONSUME(StartStatement)
-        this.CONSUME(Identifier);
-        this.SUBRULE(this.subQuery$, { LABEL: 'lhs' })
-        this.CONSUME(EndStatement)
-    })
-
-    propValidationSign$ = this.RULE('propValidationSign$', () => {
+    propValidationSign$ = this.RULE("propValidationSign$", () => {
         this.OR([
             { ALT: () => this.CONSUME(GreaterThan) },
             { ALT: () => this.CONSUME(LessThan) },
@@ -36,7 +35,7 @@ export class QlParser extends CstParser {
         ]);
     });
 
-    logicalOperators$ = this.RULE('logicalOperators$', () => {
+    logicalOperators$ = this.RULE("logicalOperators$", () => {
         this.OR([
             { ALT: () => this.CONSUME(And) },
             { ALT: () => this.CONSUME(Or) },
