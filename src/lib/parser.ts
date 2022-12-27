@@ -9,9 +9,10 @@ import {
     NumberLiteral,
     Or,
     StartStatement,
-    In
+    In, True, False, Null
 } from "./lexer";
 import { CstParser, Lexer } from "chevrotain";
+
 export class QlParser extends CstParser {
 
     constructor(options?: any) {
@@ -19,24 +20,31 @@ export class QlParser extends CstParser {
         this.performSelfAnalysis();
     }
 
-    statement$ = this.RULE("statement$", () => {
-        this.CONSUME(StartStatement);
-        this.CONSUME(Identifier);
-        this.SUBRULE(this.subQuery$);
-        this.CONSUME(EndStatement);
+    query$ = this.RULE("query$", () => {
+        this.SUBRULE(this.statement$, { LABEL: "statement" });
+        this.MANY(() => {
+            this.OPTION(() => {
+                this.SUBRULE1(this.logicalOperators$, { LABEL: "logicalOperators" });
+                this.SUBRULE2(this.statement$, { LABEL: "statement" });
+            });
+        });
     });
-
+    values$ = this.RULE("values$", () => {
+        this.OR([
+            { ALT: () => this.CONSUME(NumberLiteral) },
+            { ALT: () => this.CONSUME(Identifier) },
+            { ALT: () => this.CONSUME(True) },
+            { ALT: () => this.CONSUME(False) },
+            { ALT: () => this.CONSUME(Null) },
+            { ALT: () => this.CONSUME(And) },
+            { ALT: () => this.CONSUME(Or) },
+            { ALT: () => this.CONSUME(In) }
+        ]);
+    });
     subQuery$ = this.RULE("subQuery$", () => {
         this.CONSUME(Identifier);
-        this.SUBRULE1(this.propValidationSign$);
-        this.CONSUME(NumberLiteral);
-    });
-    query$ = this.RULE("query$", () => {
-        this.SUBRULE(this.statement$);
-        this.OPTION(() => {
-            this.SUBRULE1(this.logicalOperators$);
-            this.SUBRULE2(this.statement$);
-        });
+        this.SUBRULE1(this.propValidationSign$, { LABEL: "sign" });
+        this.SUBRULE2(this.values$, { LABEL: "value" });
     });
 
     propValidationSign$ = this.RULE("propValidationSign$", () => {
@@ -45,15 +53,20 @@ export class QlParser extends CstParser {
             { ALT: () => this.CONSUME(LessThan) },
             { ALT: () => this.CONSUME(Equal) },
             { ALT: () => this.CONSUME(In) }
-
         ]);
     });
 
     logicalOperators$ = this.RULE("logicalOperators$", () => {
         this.OR([
             { ALT: () => this.CONSUME(And) },
-            { ALT: () => this.CONSUME(Or) },
+            { ALT: () => this.CONSUME(Or) }
         ]);
+    });
+    statement$ = this.RULE("statement$", () => {
+        this.CONSUME(StartStatement);
+        this.CONSUME(Identifier);
+        this.SUBRULE(this.subQuery$, { LABEL: "subQuery" });
+        this.CONSUME(EndStatement);
     });
 
 }

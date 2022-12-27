@@ -6,7 +6,7 @@ import { lexer } from "./lexer";
 // <StartStatement><Entity>: <Prop><NumericOperators | LexicalOperators><Value><EndStatement>
 // (Asset: createDate > "1/1/1998")  And (Asset: createDate < "1/1/2003")
 
-describe("Parser", () => {
+xdescribe("Parser", () => {
     let parser: QlParser;
 
     beforeEach(() => {
