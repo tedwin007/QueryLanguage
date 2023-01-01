@@ -1,7 +1,7 @@
 {
-  "name": "filters-manger",
-  "version": "1.2.0",
-  "description": "Filter Manger",
+  "name": "query-language",
+  "version": "0.01",
+  "description": "Query Language",
   "main": "main/index.js",
   "scripts": {
     "test": "jasmine --config=jasmine.json",

@@ -1,8 +1,10 @@
-import { parser } from "./parser";
+import { parser } from "../parser/parser";
 import { Lexer } from "chevrotain";
-import { Equal, GreaterThan, LessThan, lexer } from "./lexer";
+import { LexicalToken, NumberLiteralToken, TokenType } from "./visitor.enum";
+import { ValueSignTypeMap } from "./visitor.consts";
 
 const BaseVisitor = parser.getBaseCstVisitorConstructor();
+
 
 export class Visitor extends BaseVisitor {
 
@@ -78,12 +80,8 @@ export class Visitor extends BaseVisitor {
    * @param value
    * @private
    */
-  private isValidValueSign(sign: string, value: string) {
-    const optValidation: any = {
-      "NumberLiteral": ["GreaterThan", "LessThan", "Equal"],
-      "Identifier": ["In"]
-    };
-    return optValidation[value]?.includes(sign);
+  private isValidValueSign(sign: NumberLiteralToken | LexicalToken, value: TokenType): boolean {
+    return !!ValueSignTypeMap.get(value)?.includes(sign);
   }
 }
 

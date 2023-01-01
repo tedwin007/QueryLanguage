@@ -1,6 +1,6 @@
 import jasmine from "jasmine";
 import { QlParser, parseInput } from "./parser";
-import { lexer } from "./lexer";
+import { lexer } from "../lexer/lexer";
 
 // TBD
 // <StartStatement><Entity>: <Prop><NumericOperators | LexicalOperators><Value><EndStatement>

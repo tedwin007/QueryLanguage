@@ -1,35 +1,26 @@
 import {
     allTokens,
-    Identifier,
     And,
     EndStatement,
     Equal,
+    False,
     GreaterThan,
+    Identifier,
+    In,
     LessThan,
+    Null,
     NumberLiteral,
     Or,
     StartStatement,
-    In, True, False, Null
-} from "./lexer";
+    True
+} from "../lexer/lexer";
 import { CstParser, Lexer } from "chevrotain";
+import { IParserConfig } from "@chevrotain/types";
+import { ParserRules } from "./parser.enum";
 
 export class QlParser extends CstParser {
 
-    constructor(options?: any) {
-        super(allTokens, options);
-        this.performSelfAnalysis();
-    }
-
-    query$ = this.RULE("query$", () => {
-        this.SUBRULE(this.statement$, { LABEL: "statement" });
-        this.MANY(() => {
-            this.OPTION(() => {
-                this.SUBRULE1(this.logicalOperators$, { LABEL: "logicalOperators" });
-                this.SUBRULE2(this.statement$, { LABEL: "statement" });
-            });
-        });
-    });
-    values$ = this.RULE("values$", () => {
+    values$ = this.RULE(ParserRules.values, () => {
         this.OR([
             { ALT: () => this.CONSUME(NumberLiteral) },
             { ALT: () => this.CONSUME(Identifier) },
@@ -41,13 +32,7 @@ export class QlParser extends CstParser {
             { ALT: () => this.CONSUME(In) }
         ]);
     });
-    subQuery$ = this.RULE("subQuery$", () => {
-        this.CONSUME(Identifier);
-        this.SUBRULE1(this.propValidationSign$, { LABEL: "sign" });
-        this.SUBRULE2(this.values$, { LABEL: "value" });
-    });
-
-    propValidationSign$ = this.RULE("propValidationSign$", () => {
+    propValidationSign$ = this.RULE(ParserRules.propValidationSign, () => {
         this.OR([
             { ALT: () => this.CONSUME(GreaterThan) },
             { ALT: () => this.CONSUME(LessThan) },
@@ -55,26 +40,43 @@ export class QlParser extends CstParser {
             { ALT: () => this.CONSUME(In) }
         ]);
     });
-
-    logicalOperators$ = this.RULE("logicalOperators$", () => {
+    subQuery$ = this.RULE(ParserRules.subQuery, () => {
+        this.CONSUME(Identifier);
+        this.SUBRULE1(this.propValidationSign$, { LABEL: "sign" });
+        this.SUBRULE2(this.values$, { LABEL: "value" });
+    });
+    logicalOperators$ = this.RULE(ParserRules.logicalOperators, () => {
         this.OR([
             { ALT: () => this.CONSUME(And) },
             { ALT: () => this.CONSUME(Or) }
         ]);
     });
-    statement$ = this.RULE("statement$", () => {
+    statement$ = this.RULE(ParserRules.statement, () => {
         this.CONSUME(StartStatement);
         this.CONSUME(Identifier);
         this.SUBRULE(this.subQuery$, { LABEL: "subQuery" });
         this.CONSUME(EndStatement);
     });
+    query$ = this.RULE(ParserRules.query, () => {
+        this.SUBRULE(this.statement$, { LABEL: "statement" });
+        this.MANY(() => {
+            this.OPTION(() => {
+                this.SUBRULE1(this.logicalOperators$, { LABEL: "logicalOperators" });
+                this.SUBRULE2(this.statement$, { LABEL: "statement" });
+            });
+        });
+    });
 
+    constructor(options?: IParserConfig) {
+        super(allTokens, options);
+        this.performSelfAnalysis();
+    }
 }
 
 export const parser = new QlParser()
 
 // "input" is a setter which will reset the parser's state.
-export function parseInput(text: string, lexer: Lexer) {
+export function parseInput(text: string, lexer: Lexer): boolean {
     const lexingResult = lexer.tokenize(text);
     parser.input = lexingResult.tokens;
     parser.query$();

@@ -1,4 +1,4 @@
-import { lexer } from "./lexer";
+import { lexer } from "../lexer/lexer";
 import { visitInput, Visitor } from "./visitor";
 
 describe("Visitor", () => {
