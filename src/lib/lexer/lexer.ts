@@ -76,4 +76,5 @@ export const allTokens = [
     Equal
 ]
 
+// todo : remove once the service is ready
 export const lexer = new Lexer(allTokens);
