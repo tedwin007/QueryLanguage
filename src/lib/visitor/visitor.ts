@@ -47,7 +47,7 @@ export class Visitor extends BaseVisitor {
 
     return {
       entity,
-      prop: this.transportProp(prop),
+      prop: this.visitEntityProp(prop),
       propValidationSign: visitedSign,
       values: visitedValues
     };
@@ -63,12 +63,12 @@ export class Visitor extends BaseVisitor {
    * @private
    */
   private isValidValueSign = (sign: LexerToken, value: LexerToken): boolean => !!ValueSignTypeMap.get(value)?.includes(sign);
-  private transportProp = (prop: IToken): VisitedNode => ({ image: prop.image, sign: prop.tokenType.name });
-  private propValidationSign$ = (ctx: QLNode): VisitedNode => this.nodeTransformer(ctx);
-  private logicalOperators$ = (ctx: QLNode): VisitedNode => this.nodeTransformer(ctx);
-  private values$ = (ctx: any): VisitedNode => this.nodeTransformer(ctx);
+  private visitEntityProp = (prop: IToken): VisitedNode => ({ image: prop.image, sign: prop.tokenType.name });
+  private propValidationSign$ = (ctx: QLNode): VisitedNode => this.visitQLNode(ctx);
+  private logicalOperators$ = (ctx: QLNode): VisitedNode => this.visitQLNode(ctx);
+  private values$ = (ctx: any): VisitedNode => this.visitQLNode(ctx);
 
-  private nodeTransformer = (node: QLNode): VisitedNode => {
+  private visitQLNode = (node: QLNode): VisitedNode => {
     const sign = Object.keys(node)[0] as TokenNodeKey;
     const image = node[sign][0].image;
     return { image, sign };
