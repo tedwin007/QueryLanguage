@@ -4,17 +4,17 @@ import {
     EndStatement,
     Equal,
     False,
-    GreaterThan,
-    Identifier,
-    In,
-    LessThan,
-    Null,
-    NumberLiteral,
-    Or,
-    StartStatement,
-    True
+  GreaterThan,
+  Identifier,
+  In,
+  LessThan,
+  Null,
+  NumberLiteral,
+  Or,
+  StartStatement,
+  True
 } from "../lexer/lexer";
-import { CstParser, Lexer } from "chevrotain";
+import { CstParser } from "chevrotain";
 import { IParserConfig } from "@chevrotain/types";
 import { ParserRules } from "./parser.enum";
 

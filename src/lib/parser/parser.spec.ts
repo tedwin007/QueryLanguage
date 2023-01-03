@@ -5,7 +5,7 @@ import { Lexer } from "chevrotain";
 
 // TBD
 // <StartStatement><Entity>: <Prop><NumericOperators | LexicalOperators><Value><EndStatement>
-// (Asset: createDate > "1/1/1998")  And (Asset: createDate < "1/1/2003")
+// (Asset createDate > "1/1/1998") And (user age > 30)
 
 describe("Parser", () => {
     let parser: QlParser;
