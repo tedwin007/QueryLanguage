@@ -14,7 +14,7 @@ Example: the query
 (user bday > "1/1/1998") And (user gender = "F")
 ```
 
-Is being analyzed to see if the query's structure.
+Is being analyzed to see if the query's structure is valid.
 
 future planning:
 
