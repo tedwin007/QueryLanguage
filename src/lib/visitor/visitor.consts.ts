@@ -5,10 +5,12 @@ export const ValueSignTypeMap = new Map<LexerToken, LexerToken[]>([
     LexerToken.NumberLiteral, [
     LexerToken.GreaterThan,
     LexerToken.LessThan,
-    LexerToken.Equal]
+    LexerToken.Equal
+  ]
   ],
   [
     LexerToken.Identifier, [
-    LexerToken.In
+    LexerToken.In,
+    LexerToken.Equal
   ]]
 ]);
