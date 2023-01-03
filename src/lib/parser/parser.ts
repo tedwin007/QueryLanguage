@@ -42,8 +42,8 @@ export class QlParser extends CstParser {
     });
     subQuery$ = this.RULE(ParserRules.subQuery, () => {
         this.CONSUME(Identifier);
-        this.SUBRULE1(this.propValidationSign$, { LABEL: "sign" });
-        this.SUBRULE2(this.values$, { LABEL: "value" });
+        this.SUBRULE1(this.propValidationSign$, { LABEL: "propValidationSign" });
+        this.SUBRULE2(this.values$, { LABEL: "values" });
     });
     logicalOperators$ = this.RULE(ParserRules.logicalOperators, () => {
         this.OR([
@@ -75,17 +75,4 @@ export class QlParser extends CstParser {
 
 export const parser = new QlParser()
 
-// "input" is a setter which will reset the parser's state.
-export function parseInput(text: string, lexer: Lexer): boolean {
-    const lexingResult = lexer.tokenize(text);
-    parser.input = lexingResult.tokens;
-    parser.query$();
-
-    if (parser.errors.length > 0) {
-        console.error(parser.errors);
-        throw new Error("Failed to parse the input");
-    }
-
-    return true;
-}
 

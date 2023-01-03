@@ -1,6 +1,6 @@
 {
   "name": "query-language",
-  "version": "0.01",
+  "version": "1.0.1",
   "description": "Query Language",
   "main": "main/index.js",
   "scripts": {

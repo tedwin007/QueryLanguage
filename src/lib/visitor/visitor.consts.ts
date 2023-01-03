@@ -1,15 +1,14 @@
-import { LexicalToken, NumberLiteralToken, TokenType } from "./visitor.enum";
+import { LexerToken } from "../lexer/lexer.enum";
 
-// todo:improve type - need to be more strict
-export const ValueSignTypeMap = new Map<TokenType, (NumberLiteralToken | LexicalToken)[]>([
+export const ValueSignTypeMap = new Map<LexerToken, LexerToken[]>([
   [
-    TokenType.NumberLiteral, [
-    NumberLiteralToken.GreaterThan,
-    NumberLiteralToken.LessThan,
-    NumberLiteralToken.Equal]
+    LexerToken.NumberLiteral, [
+    LexerToken.GreaterThan,
+    LexerToken.LessThan,
+    LexerToken.Equal]
   ],
   [
-    TokenType.Identifier, [
-    LexicalToken.In
+    LexerToken.Identifier, [
+    LexerToken.In
   ]]
 ]);

@@ -1,10 +1,11 @@
 import { parser } from "../parser/parser";
-import { Lexer } from "chevrotain";
-import { LexicalToken, NumberLiteralToken, TokenType } from "./visitor.enum";
+import { CstNode } from "chevrotain";
 import { ValueSignTypeMap } from "./visitor.consts";
+import { IToken } from "@chevrotain/types";
+import { LexerToken } from "../lexer/lexer.enum";
+import { QLNode, TokenNodeKey, VisitedNode, VisitedStatement } from "./visitor.interfaces";
 
 const BaseVisitor = parser.getBaseCstVisitorConstructor();
-
 
 export class Visitor extends BaseVisitor {
 
@@ -13,90 +14,67 @@ export class Visitor extends BaseVisitor {
     this.validateVisitor();
   }
 
-  query$(ctx: any) {
-    return ctx.statement.reduce((current: any, next: any, index: number, arr: any[]) => {
-      current.push(this.visit(next));
-      if (ctx.logicalOperators?.[index]) {
-        current.push(this.visit(ctx.logicalOperators[index]));
-      }
-      return current;
-    }, []);
+  /**
+   * query$
+   * return an array in the following struct
+   * [ VisitedStatement    , VisitedNode, VisitedStatement] | [VisitedStatement]
+   * [ (Asset prop > 10)   ,     and    , (User age > 1)]  | [(Asset prop > 10)]
+   * @param ctx
+   */
+  query$(ctx: QLNode): (QLNode | VisitedNode)[] {
+    return ctx.statement.reduce(
+      (current: QLNode[], next: CstNode, index: number) => {
+        current.push(this.visit(next));
+        if (ctx.logicalOperators?.[index])
+          current.push(this.visit(ctx.logicalOperators[index]));
+        return current;
+      }, []);
   }
 
-  statement$(ctx: any) {
-    const entity = ctx.Identifier[0].image;
-    // todo: validate entity existence
-    return this.visit(ctx?.subQuery, { image: entity, sign: "Identifier" });
+  statement$(ctx: QLNode): VisitedStatement {
+    const { image } = ctx.Identifier[0];
+    return this.visit(ctx.subQuery, { image, sign: LexerToken.Identifier });
   }
 
-  subQuery$(ctx: any, entity: { sign: string, image: string }) {
-    // todo: validate prop existence (in "entity")
-    const prop: any = ctx.Identifier[0];
-    const sign = this.visit(ctx.sign);
-    const value = this.visit(ctx.value);
+  subQuery$(ctx: QLNode, entity: VisitedNode): VisitedStatement {
+    const prop = ctx.Identifier[0];
+    const visitedSign = this.visit(ctx.propValidationSign);
+    const visitedValues = this.visit(ctx.values);
 
-    if (!this.isValidValueSign(sign.sign, value.sign))
+    if (!this.isValidValueSign(visitedSign.sign, visitedValues.sign)) {
       throw new Error("isValidValueSign");
+    }
 
     return {
       entity,
       prop: this.transportProp(prop),
-      sign,
-      value
+      propValidationSign: visitedSign,
+      values: visitedValues
     };
-  }
-
-  propValidationSign$(ctx: any) {
-    return this.nodeTransformer(ctx);
-  }
-
-  logicalOperators$(ctx: any) {
-    return this.nodeTransformer(ctx);
-  }
-
-  values$(ctx: any) {
-    return this.nodeTransformer(ctx);
-  }
-
-  private transportProp(prop: any) {
-    return {
-      image: prop.image,
-      sign: prop.tokenType.name
-    };
-  }
-
-  private nodeTransformer(node: { [key: string]: { image: string }[] }) {
-    const sign = Object.keys(node)[0];
-    const image = node[sign][0].image;
-    return { image, sign };
-
   }
 
   /**
    * ## isValidValueSign
+   * // todo: improve types
    * check if the "input sign" [> | < | = | in | ...] exist
    * and valid |(by the "value type" [NumberLiteral | ])
    * @param sign
    * @param value
    * @private
    */
-  private isValidValueSign(sign: NumberLiteralToken | LexicalToken, value: TokenType): boolean {
-    return !!ValueSignTypeMap.get(value)?.includes(sign);
-  }
+  private isValidValueSign = (sign: LexerToken, value: LexerToken): boolean => !!ValueSignTypeMap.get(value)?.includes(sign);
+  private transportProp = (prop: IToken): VisitedNode => ({ image: prop.image, sign: prop.tokenType.name });
+  private propValidationSign$ = (ctx: QLNode): VisitedNode => this.nodeTransformer(ctx);
+  private logicalOperators$ = (ctx: QLNode): VisitedNode => this.nodeTransformer(ctx);
+  private values$ = (ctx: any): VisitedNode => this.nodeTransformer(ctx);
+
+  private nodeTransformer = (node: QLNode): VisitedNode => {
+    const sign = Object.keys(node)[0] as TokenNodeKey;
+    const image = node[sign][0].image;
+    return { image, sign };
+  };
 }
 
 export const visitor = new Visitor();
 
-// "input" is a setter which will reset the parser's state.
-export function visitInput(text: string, lexer: Lexer) {
-  const lexingResult = lexer.tokenize(text);
-  parser.input = lexingResult.tokens;
-  const queryResult = visitor.visit(parser.query$());
 
-  if (parser.errors.length > 0) {
-    console.error(parser.errors);
-    throw new Error("Failed to parse the input");
-  }
-
-  return queryResult;
-}

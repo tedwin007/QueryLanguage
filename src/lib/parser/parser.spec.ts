@@ -1,12 +1,13 @@
 import jasmine from "jasmine";
-import { QlParser, parseInput } from "./parser";
+import { QlParser, parser } from "./parser";
 import { lexer } from "../lexer/lexer";
+import { Lexer } from "chevrotain";
 
 // TBD
 // <StartStatement><Entity>: <Prop><NumericOperators | LexicalOperators><Value><EndStatement>
 // (Asset: createDate > "1/1/1998")  And (Asset: createDate < "1/1/2003")
 
-xdescribe("Parser", () => {
+describe("Parser", () => {
     let parser: QlParser;
 
     beforeEach(() => {
@@ -46,4 +47,16 @@ xdescribe("Parser", () => {
     })
 });
 
-// 
+// === Utils ===
+export function parseInput(text: string, lexer: Lexer): boolean {
+    const lexingResult = lexer.tokenize(text);
+    parser.input = lexingResult.tokens;
+    parser.query$();
+
+    if (parser.errors.length > 0) {
+        console.error(parser.errors);
+        throw new Error("Failed to parse the input");
+    }
+
+    return true;
+}
