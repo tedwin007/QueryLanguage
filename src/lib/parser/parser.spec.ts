@@ -1,4 +1,3 @@
-import jasmine from "jasmine";
 import { QlParser, parser } from "./parser";
 import { lexer } from "../lexer/lexer";
 import { Lexer } from "chevrotain";
