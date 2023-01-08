@@ -2,13 +2,10 @@ import { DataSource } from "typeorm";
 import { DataSourceOptions } from "typeorm/data-source/DataSourceOptions";
 
 export type DSOptions = Exclude<DataSourceOptions, "MongoConnectionOptions">;
-export const createDataSource = (options: DSOptions) => {
-  const result = new DataSource(options);
-  return new Promise((resolve, reject) => {
-    result.initialize().catch((err) => {
-      reject(`Error init DS: ${err.message}`);
-    }).then(() => result);
-  });
 
-};
+export function createDataSource(options: DSOptions): Promise<void | DataSource> {
+  return (new DataSource(options).initialize()).catch((err) => {
+    throw new Error(`Error init DS: ${err.message}`);
+  }).then((ds: void | DataSource) => ds);
+}
 
