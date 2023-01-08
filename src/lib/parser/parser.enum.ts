@@ -2,7 +2,7 @@ export enum ParserRules {
   subQuery = "subQuery$",
   values = "values$",
   query = "query$",
-  propValidationSign = "propValidationSign$",
-  logicalOperators = "logicalOperators$",
+  operator = "operator$",
+  conjunctionOpt = "conjunctionOpt$",
   statement = "statement$"
 }

@@ -47,21 +47,21 @@ export function visitInput(text: string, lexer: Lexer) {
 const expectedSimpleStatement: VisitedStatement[] = [{
   entity: { image: "Asset", sign: LexerToken.Identifier },
   prop: { image: "prop", sign: LexerToken.Identifier },
-  propValidationSign: { image: ">", sign: LexerToken.GreaterThan },
+  operator: { image: ">", sign: LexerToken.GreaterThan },
   values: { image: "10", sign: LexerToken.NumberLiteral }
 }];
 
 const expectedComplexStatement = [{
   entity: { image: "Asset", sign: "Identifier" },
   prop: { image: "prop", sign: "Identifier" },
-  propValidationSign: { image: ">", sign: "GreaterThan" },
+  operator: { image: ">", sign: "GreaterThan" },
   values: { image: "10", sign: "NumberLiteral" }
 },
   { image: "and", sign: "And" },
   {
     entity: { image: "User", sign: "Identifier" },
     prop: { image: "age", sign: "Identifier" },
-    propValidationSign: { image: ">", sign: "GreaterThan" },
+    operator: { image: ">", sign: "GreaterThan" },
     values: { image: "1", sign: "NumberLiteral" }
   }
 ];

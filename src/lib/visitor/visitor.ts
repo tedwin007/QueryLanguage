@@ -15,6 +15,7 @@ export class Visitor extends BaseVisitor {
   }
 
   /**
+   * Select * from Assets where prop > 10
    * query$
    * return an array in the following struct
    * [ VisitedStatement    , VisitedNode, VisitedStatement] | [VisitedStatement]
@@ -25,8 +26,8 @@ export class Visitor extends BaseVisitor {
     return ctx.statement.reduce(
       (current: QLNode[], next: CstNode, index: number) => {
         current.push(this.visit(next));
-        if (ctx.logicalOperators?.[index])
-          current.push(this.visit(ctx.logicalOperators[index]));
+        if (ctx.conjunctionOpt?.[index])
+          current.push(this.visit(ctx.conjunctionOpt[index]));
         return current;
       }, []);
   }
@@ -38,7 +39,7 @@ export class Visitor extends BaseVisitor {
 
   subQuery$(ctx: QLNode, entity: VisitedNode): VisitedStatement {
     const prop = ctx.Identifier[0];
-    const visitedSign = this.visit(ctx.propValidationSign);
+    const visitedSign = this.visit(ctx.operator);
     const visitedValues = this.visit(ctx.values);
 
     if (!this.isValidValueSign(visitedSign.sign, visitedValues.sign)) {
@@ -48,7 +49,7 @@ export class Visitor extends BaseVisitor {
     return {
       entity,
       prop: this.visitEntityProp(prop),
-      propValidationSign: visitedSign,
+      operator: visitedSign,
       values: visitedValues
     };
   }
@@ -64,8 +65,8 @@ export class Visitor extends BaseVisitor {
    */
   private isValidValueSign = (sign: LexerToken, value: LexerToken): boolean => !!ValueSignTypeMap.get(value)?.includes(sign);
   private visitEntityProp = (prop: IToken): VisitedNode => ({ image: prop.image, sign: prop.tokenType.name });
-  private propValidationSign$ = (ctx: QLNode): VisitedNode => this.visitQLNode(ctx);
-  private logicalOperators$ = (ctx: QLNode): VisitedNode => this.visitQLNode(ctx);
+  private conjunctionOpt$ = (ctx: QLNode): VisitedNode => this.visitQLNode(ctx);
+  private operator$ = (ctx: QLNode): VisitedNode => this.visitQLNode(ctx);
   private values$ = (ctx: any): VisitedNode => this.visitQLNode(ctx);
 
   private visitQLNode = (node: QLNode): VisitedNode => {

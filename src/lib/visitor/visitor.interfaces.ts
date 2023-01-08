@@ -16,7 +16,7 @@ export interface VisitedNode {
 
 export interface VisitedStatement {
   prop: VisitedNode;
-  propValidationSign: VisitedNode;
+  operator: VisitedNode;
   values: VisitedNode;
   entity: VisitedNode;
 }
