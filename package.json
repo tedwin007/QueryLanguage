@@ -14,7 +14,13 @@
     "node": ">=10"
   },
   "dependencies": {
+    "mssql": "^9.0.1",
+    "mysql": "^2.18.1",
+    "oracledb": "^5.5.0",
+    "pg": "^8.8.0",
     "reflect-metadata": "^0.1.13",
+    "sql.js": "^1.8.0",
+    "sqlite3": "^5.1.4",
     "uuidv4": "^6.2.6"
   },
   "devDependencies": {
