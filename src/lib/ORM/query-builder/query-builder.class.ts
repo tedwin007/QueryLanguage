@@ -16,7 +16,7 @@ export class QueryBuilderClass extends Visitor {
     this.queryBuilder = this.dataSource.createQueryBuilder();
   }
 
-  async buildQuery(statements: VisitedStatement[]) {
+  async buildQuery(statements: VisitedStatement[]): Promise<{ execute: () => Promise<any> }> {
     const query: SelectQueryBuilder<any> = this.dataSource.createQueryBuilder().select();
     statements.map((statement: VisitedStatement, index: number) => {
       if (index > 0) {
@@ -25,11 +25,17 @@ export class QueryBuilderClass extends Visitor {
         this.transform(query, statement);
       }
     });
+
+    return {
+      execute: (): Promise<any> => this.queryBuilder.execute()
+    };
   }
 
   private transform(query: SelectQueryBuilder<any>, statement: VisitedStatement): SelectQueryBuilder<ObjectLiteral> {
-    return query.select()
-      .from({} as any, statement.entity.image)
-      .where(`${statement.entity.image}.${statement.prop.image} ${statement.operator.image}:values`, { values: statement.values.image });
+    return query.from({} as any, statement.entity.image)
+      .where(
+        `${statement.entity.image}.${statement.prop.image} ${statement.operator.image}:values`,
+        { values: statement.values.image }
+      );
   }
 }
