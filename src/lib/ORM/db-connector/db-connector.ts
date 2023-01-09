@@ -8,4 +8,3 @@ export function createDataSource(options: DSOptions): Promise<void | DataSource>
     throw new Error(`Error init DS: ${err.message}`);
   }).then((ds: void | DataSource) => ds);
 }
-

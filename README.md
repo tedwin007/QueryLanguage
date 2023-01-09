@@ -1,5 +1,8 @@
 # QueryLanguage - [Work-in-Progress]
 
+for auto generate type from DB run
+```npm run generate-types```
+
 this project is the second part of a larger project aiming to provide
 an easy to implement solution for filtering and query data in a JQL like style
 
