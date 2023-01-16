@@ -1,13 +1,10 @@
 import { Visitor } from "../../visitor/visitor";
-import { DataSource, ObjectLiteral, SelectQueryBuilder } from "typeorm";
+import { DataSource, ObjectLiteral, SelectQueryBuilder, EntityTarget } from "typeorm";
 import { VisitedStatement } from "../../visitor/visitor.interfaces";
+export class QueryBuilderClass<T extends ObjectLiteral> extends Visitor {
+  private queryBuilder: SelectQueryBuilder<T>;
 
-
-// Concept Only! - checking if this could be a valid solution
-export class QueryBuilderClass extends Visitor {
-  private queryBuilder: SelectQueryBuilder<ObjectLiteral>;
-
-  constructor(private dataSource: DataSource) {
+  constructor(private dataSource: DataSource, private entity: EntityTarget<any>) {
     super();
     if (!dataSource) {
       throw "You need create a valid DataSource instance";
@@ -16,26 +13,44 @@ export class QueryBuilderClass extends Visitor {
     this.queryBuilder = this.dataSource.createQueryBuilder();
   }
 
-  async buildQuery(statements: VisitedStatement[]): Promise<{ execute: () => Promise<any> }> {
-    const query: SelectQueryBuilder<any> = this.dataSource.createQueryBuilder().select();
-    statements.map((statement: VisitedStatement, index: number) => {
-      if (index > 0) {
-        query.addSelect((query: SelectQueryBuilder<any>) => this.transform(query, statement));
-      } else {
-        this.transform(query, statement);
-      }
-    });
-
+  buildQuery(statements: VisitedStatement[]): { execute: () => Promise<any>, sqlSelectStatement: string } {
+    let sqlSelectStatement = this.getSqlQuery(statements)
     return {
-      execute: (): Promise<any> => this.queryBuilder.execute()
-    };
+      execute: () => this.dataSource.manager.getRepository(this.entity).query(sqlSelectStatement),
+      sqlSelectStatement
+    }
   }
 
-  private transform(query: SelectQueryBuilder<any>, statement: VisitedStatement): SelectQueryBuilder<ObjectLiteral> {
-    return query.from({} as any, statement.entity.image)
-      .where(
-        `${statement.entity.image}.${statement.prop.image} ${statement.operator.image}:values`,
-        { values: statement.values.image }
-      );
+  private getSqlQuery(statementList: VisitedStatement[]) {
+    let sqlSelectStatement = `select * from `;
+    statementList.forEach((item, i) => {
+      if (i == 0) {
+        sqlSelectStatement += this.getInitialSelectQuery(item);
+      } else if (this.hasConjunctionOpt(statementList, i)) {
+        sqlSelectStatement += ' ' + statementList[i].conjunctionOpt.image + this.getExpandedQuery(statementList[i + 1]);
+      }
+    })
+    return sqlSelectStatement
+  }
+
+  private getInitialSelectQuery(item: VisitedStatement): string {
+    const entity = item.entity;
+    const prop = item.prop;
+    const operator = item.operator;
+    const values = item.values;
+    return `${entity.image} where ${prop.image}${operator.image}${values.image}`;;
+  }
+
+  private hasConjunctionOpt(statementList: VisitedStatement[], i: number): boolean {
+    return (statementList.length > (i + 1)) && (statementList.length % 2 !== 0) && (i % 2 !== 0);
+  }
+
+  private getExpandedQuery(item: VisitedStatement): string {
+    const prop = item.prop;
+    const operator = item.operator;
+    const values = item.values;
+    return ` ${prop.image}${operator.image}${values.image}`;
   }
 }
+
+

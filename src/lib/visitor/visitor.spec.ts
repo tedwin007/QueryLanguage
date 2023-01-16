@@ -57,7 +57,7 @@ const expectedComplexStatement = [{
   operator: { image: ">", sign: "GreaterThan" },
   values: { image: "10", sign: "NumberLiteral" }
 },
-  { image: "and", sign: "And" },
+  { conjunctionOpt: { image: "and", sign: "And" } },
   {
     entity: { image: "User", sign: "Identifier" },
     prop: { image: "age", sign: "Identifier" },

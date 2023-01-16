@@ -4,7 +4,5 @@ import { DataSourceOptions } from "typeorm/data-source/DataSourceOptions";
 export type DSOptions = Exclude<DataSourceOptions, "MongoConnectionOptions">;
 
 export function createDataSource(options: DSOptions): Promise<void | DataSource> {
-  return (new DataSource(options).initialize()).catch((err) => {
-    throw new Error(`Error init DS: ${err.message}`);
-  }).then((ds: void | DataSource) => ds);
+  return (new DataSource(options)).initialize()
 }

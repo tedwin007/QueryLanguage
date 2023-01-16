@@ -4,6 +4,7 @@ import { ValueSignTypeMap } from "./visitor.consts";
 import { IToken } from "@chevrotain/types";
 import { LexerToken } from "../lexer/lexer.enum";
 import { QLNode, TokenNodeKey, VisitedNode, VisitedStatement } from "./visitor.interfaces";
+import { ParserRules } from "../parser/parser.enum";
 
 const BaseVisitor = parser.getBaseCstVisitorConstructor();
 
@@ -26,8 +27,12 @@ export class Visitor extends BaseVisitor {
     return ctx.statement.reduce(
       (current: QLNode[], next: CstNode, index: number) => {
         current.push(this.visit(next));
-        if (ctx.conjunctionOpt?.[index])
-          current.push(this.visit(ctx.conjunctionOpt[index]));
+        if (ctx.conjunctionOpt?.[index]) {
+          const newLocal = {
+            conjunctionOpt: this.visit(ctx.conjunctionOpt[index])
+          }
+          current.push(newLocal as any);
+        }
         return current;
       }, []);
   }

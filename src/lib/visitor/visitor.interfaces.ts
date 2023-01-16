@@ -19,4 +19,5 @@ export interface VisitedStatement {
   operator: VisitedNode;
   values: VisitedNode;
   entity: VisitedNode;
+  conjunctionOpt?: VisitedNode
 }
