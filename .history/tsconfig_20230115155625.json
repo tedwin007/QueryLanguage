@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+        "experimentalDecorators": true,
+    "target": "ES6",
+    "module": "commonjs",
+    "lib": [
+      "es2019",
+      "dom"
+    ],
+    "declaration": true,
+    "outDir": "main",
+    "importHelpers": true,
+    "sourceMap": true,
+    "strict": true,
+    "types": [
+      "node"
+
+    ],
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "src/*.ts",
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules/**"
+  ],
+  "typedocOptions": {
+    "entryPoints": ["src/*"],
+    "out": "docs"
+  }
+}
