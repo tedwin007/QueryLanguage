@@ -1,5 +1,8 @@
 # QueryLanguage - [Work-in-Progress]
 
+for auto generate type from DB run
+```npm run generate-types```
+
 this project is the second part of a larger project aiming to provide
 an easy to implement solution for filtering and query data in a JQL like style
 
@@ -31,3 +34,8 @@ will throw the following msg due to wrong statement structure
 ``
 MismatchedTokenException: Expecting token of type --> Identifier <-- but found --> '1' <--
 ``
+
+## Query Builder
+included in this project is TypeORM (https://typeorm.io/) and (typeorm-model-generator) libs
+this enables you to auto-generate TS types (TypeORM specifically) from your DB 
+run ``` npm run generate-types ``` and follow the CLI steps

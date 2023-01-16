@@ -1,21 +1,18 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
     "target": "ES6",
     "module": "commonjs",
-    "lib": [
-      "es2019",
-      "dom"
-    ],
+    "lib": ["es2019"    ],
     "declaration": true,
     "outDir": "main",
     "importHelpers": true,
     "sourceMap": true,
-    "strict": true,
+    "strict": false,
     "types": [
       "node"
-
     ],
-    "esModuleInterop": true,
+    "esModuleInterop": true, 
     "resolveJsonModule": true
   },
   "include": [

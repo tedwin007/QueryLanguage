@@ -1,17 +1,11 @@
 import { DSOptions, createDataSource } from "./db-connector";
 import { DataSource } from "typeorm";
 
-
 describe("db-connector", () => {
   let DS: Promise<DataSource | unknown>;
-  DataSource.prototype.initialize = jasmine.createSpy();
 
   beforeEach(() => {
-
-    jasmine.createSpy("createDataSource", createDataSource).and.returnValue({
-      initialize: () => Promise.resolve()
-    } as any);
-
+    DataSource.prototype.initialize = jasmine.createSpy().and.resolveTo({});
     DS = createDataSource(DSConnectionMock);
   });
 
@@ -22,7 +16,6 @@ describe("db-connector", () => {
   it("should create DataSource instance", () => {
     expect(DS).toBeDefined();
   });
-
 });
 
 

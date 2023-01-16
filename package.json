@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jasmine --config=jasmine.json",
     "coverage": "nyc npm run test && nyc report --reporter=html",
+    "generate-types": "npx typeorm-model-generator",
     "dev": "nodemon src/index.ts",
     "tsc": "tsc -p ./",
     "doc": "typedoc --tsconfig tsconfig.json"
@@ -21,6 +22,7 @@
     "reflect-metadata": "^0.1.13",
     "sql.js": "^1.8.0",
     "sqlite3": "^5.1.4",
+    "typeorm-model-generator": "^0.4.6",
     "uuidv4": "^6.2.6"
   },
   "devDependencies": {
