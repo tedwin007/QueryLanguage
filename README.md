@@ -34,3 +34,8 @@ will throw the following msg due to wrong statement structure
 ``
 MismatchedTokenException: Expecting token of type --> Identifier <-- but found --> '1' <--
 ``
+
+## Query Builder
+included in this project is TypeORM (https://typeorm.io/) and (typeorm-model-generator) libs
+this enables you to auto-generate TS types (TypeORM specifically) from your DB 
+run ``` npm run generate-types ``` and follow the CLI steps
