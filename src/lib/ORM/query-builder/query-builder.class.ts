@@ -1,24 +1,23 @@
-import { Visitor } from "../../visitor/visitor";
 import { DataSource, ObjectLiteral, SelectQueryBuilder, EntityTarget } from "typeorm";
 import { VisitedStatement } from "../../visitor/visitor.interfaces";
-export class QueryBuilderClass<T extends ObjectLiteral> extends Visitor {
-  private queryBuilder: SelectQueryBuilder<T>;
+import { AbstractQueryBuilder } from './abstract-query-builder.class';
+export interface BuildQueryResponse {
+  execute: () => Promise<any>;
+  sqlSelectStatement: string;
+};
 
-  constructor(private dataSource: DataSource, private entity: EntityTarget<any>) {
-    super();
-    if (!dataSource) {
-      throw "You need create a valid DataSource instance";
-    }
-    this.validateVisitor();
-    this.queryBuilder = this.dataSource.createQueryBuilder();
+export class QueryBuilderClass<T extends ObjectLiteral> extends AbstractQueryBuilder {
+
+  constructor(dataSource: DataSource, private entity: EntityTarget<any>) {
+    super(dataSource);
   }
 
-  buildQuery(statements: VisitedStatement[]): { execute: () => Promise<any>, sqlSelectStatement: string } {
+  buildQuery(statements: VisitedStatement[]): BuildQueryResponse {
     let sqlSelectStatement = this.getSqlQuery(statements)
     return {
       execute: () => this.dataSource.manager.getRepository(this.entity).query(sqlSelectStatement),
       sqlSelectStatement
-    }
+    } 
   }
 
   private getSqlQuery(statementList: VisitedStatement[]) {
