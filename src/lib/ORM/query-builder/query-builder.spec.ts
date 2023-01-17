@@ -1,6 +1,6 @@
-import { Test } from "../../../output/entities/Test";
 import { lexer } from "../../lexer/lexer";
 import { parser } from "../../parser/parser";
+import { Test } from "../entities/Test";
 import { QueryBuilderClass } from "./query-builder.class";
 describe('QueryBuilderClass', () => {
   let ql: QueryBuilderClass<Test>

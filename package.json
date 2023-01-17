@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jasmine --config=jasmine.json",
     "coverage": "nyc npm run test && nyc report --reporter=html",
-    "generate-types": "npx typeorm-model-generator",
+    "generate-types": "node ./src/lib/ORM/scripts/generate-types.js",
     "dev": "nodemon src/index.ts",
     "tsc": "tsc -p ./",
     "doc": "typedoc --tsconfig tsconfig.json"
@@ -20,6 +20,7 @@
     "oracledb": "^5.5.0",
     "pg": "^8.8.0",
     "reflect-metadata": "^0.1.13",
+    "shelljs": "^0.8.5",
     "sql.js": "^1.8.0",
     "sqlite3": "^5.1.4",
     "typeorm-model-generator": "^0.4.6",
