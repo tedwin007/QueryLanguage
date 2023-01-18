@@ -6,7 +6,14 @@ export interface BuildQueryResponse {
   sqlSelectStatement: string;
 };
 
-export class QueryBuilderClass<T extends ObjectLiteral> extends AbstractQueryBuilder {
+// This is a simple example for implement the QueryBuilder layer 
+// this component mitigates between the data (DB) layer and the QueryLanguage (tokenizer-> parser -> visit) 
+// the output  of this layer is a query/result from the DB based on visitor output (VisitedStatement)
+// this layer support typeORM to be used for query validation and for encapsulation..
+// also possible to auto-generate typeScript (ORM) types inferred from you DB 
+// Ideas for later development :
+//    - use the FilterManger package with typeORM to validate entities props (some issues are open on typeORM's github) 
+export class QueryBuilderClass extends AbstractQueryBuilder {
 
   constructor(dataSource: DataSource, private entity: EntityTarget<any>) {
     super(dataSource);
