@@ -1,7 +1,8 @@
 {
   "spec_dir": "src",
   "spec_files": [
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "**/*.spec.js"
   ],
   "helpers": [
     "../node_modules/ts-node/register/type-check.js"

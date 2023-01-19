@@ -27,7 +27,7 @@ export class QueryBuilderClass extends AbstractQueryBuilder<BuildQueryResponse> 
     } 
   }
 
-  private getSqlQuery(statementList: VisitedStatement[]) {
+  private getSqlQuery(statementList: VisitedStatement[]): string {
     let sqlSelectStatement = `SELECT * FROM `;
     statementList.forEach((item, i) => {
       if (i == 0) {

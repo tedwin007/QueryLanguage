@@ -4,7 +4,6 @@ import { parser } from "../../parser/parser";
 import { Test } from "../entities/Test";
 import { QueryBuilderClass } from "./query-builder.class";
 import { VisitedStatement } from './../../visitor/visitor.interfaces'
-import * as jasmin from 'jasmine';
 
 describe('QueryBuilderClass', () => {
   let ql: QueryBuilderClass;
@@ -14,38 +13,54 @@ describe('QueryBuilderClass', () => {
   let queryResult: VisitedStatement[];
 
   describe('Simple Statement', () => {
+    simpleStatement = "(Test prop_one = 1)";
     beforeEach(() => {
-      ql = new QueryBuilderClass({ createQueryBuilder: jasmine.createSpy() } as any, Test)
-      simpleStatement = "(Test prop_one = '1')";
-      lexingResult = lexer.tokenize(simpleStatement);
-      parser.input = lexingResult.tokens;
-      queryResult = ql.visit(parser.query$());
+      ({ ql, queryResult } = init(ql, simpleStatement, lexingResult, queryResult));
     })
 
-    it('QueryBuilder instance should exists', function () {
-      const spy = jasmine.createSpy('validateVisitor', QueryBuilderClass.prototype.validateVisitor);
+    it('QueryBuilder instance should exists', () => {
       expect(ql).toBeDefined();
-      expect(spy).toHaveBeenCalled();
     })
 
-    it('BuildQuery should return a valid (simple) query', function () {
+    it('BuildQuery should return a valid (simple) query', () => {
       const sqlSelectStatement = ql.buildQuery(queryResult).sqlSelectStatement;
-      expect(sqlSelectStatement).toEqual("SELECT * FROM Test WHERE Test.prop_one=1")
+      const expected = "SELECT * FROM Test WHERE Test.prop_one=1";
+      expect(sqlSelectStatement).toEqual(expected)
     })
   })
 
   describe('Complex Statement', () => {
     beforeEach(() => {
-      ql = new QueryBuilderClass({ createQueryBuilder: jasmine.createSpy() } as any, Test)
       complexStatement = "(Test prop_one = '1') And (Test prop_two = '1')";
-      lexingResult = lexer.tokenize(complexStatement);
-      parser.input = lexingResult.tokens;
-      queryResult = ql.visit(parser.query$());
+      ({ ql, queryResult } = init(ql, complexStatement, lexingResult, queryResult));
     })
 
-    it('buildQuery should return a valid query', function () {
+    it('buildQuery should return a valid query', () => {
       const sqlSelectStatement = ql.buildQuery(queryResult).sqlSelectStatement;
-      expect(sqlSelectStatement).toEqual('SELECT * FROM Test WHERE Test.prop_one=1 And Test.prop_two=1');
+      const expected = 'SELECT * FROM Test WHERE Test.prop_one=1 And Test.prop_two=1';
+      expect(sqlSelectStatement).toEqual(expected);
+    })
+  })
+
+  describe('Complex statement with two different entities', () => {
+    beforeEach(() => {
+      complexStatement = "(Test prop_one = '1') And (User prop_two = '1')";
+      ({ ql, queryResult } = init(ql, complexStatement, lexingResult, queryResult));
+    })
+
+    it('BuildQuery method should return a valid query', () => {
+      const sqlSelectStatement = ql.buildQuery(queryResult).sqlSelectStatement;
+      const expected = 'SELECT * FROM Test WHERE Test.prop_one=1 And User.prop_two=1';
+      expect(sqlSelectStatement).toEqual(expected);
     })
   })
 });
+
+function init(ql: QueryBuilderClass, statement: string, lexingResult: ILexingResult, queryResult: VisitedStatement[]) {
+  ql = new QueryBuilderClass({ createQueryBuilder: jasmine.createSpy() } as any, Test);
+  lexingResult = lexer.tokenize(statement);
+  parser.input = lexingResult.tokens;
+  queryResult = ql.visit(parser.query$());
+  return { ql, lexingResult, queryResult };
+}
+
