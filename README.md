@@ -10,7 +10,6 @@ part one: "Filter Manger"
 https://github.com/tedwin007/FilterManger
 
 ## Analyze query
-
 Example: the query
 
 ```
@@ -37,5 +36,7 @@ MismatchedTokenException: Expecting token of type --> Identifier <-- but found -
 
 ## Query Builder
 included in this project is TypeORM (https://typeorm.io/) and (typeorm-model-generator) libs
-this enables you to auto-generate TS types (TypeORM specifically) from your DB 
-run ``` npm run generate-types ``` and follow the CLI steps
+this enables you to auto-generate TS types (TypeORM specifically) from your DB  by running
+ ``` npm run generate-types ``` 
+ You can use .env file to configure your db connection 
+ or you simply follow the CLI steps

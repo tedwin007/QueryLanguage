@@ -4,7 +4,6 @@ import { ValueSignTypeMap } from "./visitor.consts";
 import { IToken } from "@chevrotain/types";
 import { LexerToken } from "../lexer/lexer.enum";
 import { QLNode, TokenNodeKey, VisitedNode, VisitedStatement } from "./visitor.interfaces";
-import { ParserRules } from "../parser/parser.enum";
 
 const BaseVisitor = parser.getBaseCstVisitorConstructor();
 
@@ -61,7 +60,6 @@ export class Visitor extends BaseVisitor {
 
   /**
    * ## isValidValueSign
-   * // todo: improve types
    * check if the "input sign" [> | < | = | in | ...] exist
    * and valid |(by the "value type" [NumberLiteral | ])
    * @param sign
