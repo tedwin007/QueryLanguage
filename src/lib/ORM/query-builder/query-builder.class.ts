@@ -1,4 +1,4 @@
-import { DataSource, ObjectLiteral, SelectQueryBuilder, EntityTarget } from "typeorm";
+import { DataSource, ObjectLiteral, SelectQueryBuilder, EntityTarget, Entity } from 'typeorm';
 import { VisitedStatement } from "../../visitor/visitor.interfaces";
 import { AbstractQueryBuilder } from './abstract-query-builder.class';
 export interface BuildQueryResponse {
@@ -28,7 +28,7 @@ export class QueryBuilderClass extends AbstractQueryBuilder {
   }
 
   private getSqlQuery(statementList: VisitedStatement[]) {
-    let sqlSelectStatement = `select * from `;
+    let sqlSelectStatement = `SELECT * FROM `;
     statementList.forEach((item, i) => {
       if (i == 0) {
         sqlSelectStatement += this.getInitialSelectQuery(item);
@@ -44,7 +44,7 @@ export class QueryBuilderClass extends AbstractQueryBuilder {
     const prop = item.prop;
     const operator = item.operator;
     const values = item.values;
-    return `${entity.image} where ${prop.image}${operator.image}${values.image}`;;
+    return `${entity.image} WHERE ${entity.image}.${prop.image}${operator.image}${values.image}`;;
   }
 
   private hasConjunctionOpt(statementList: VisitedStatement[], i: number): boolean {
@@ -52,10 +52,11 @@ export class QueryBuilderClass extends AbstractQueryBuilder {
   }
 
   private getExpandedQuery(item: VisitedStatement): string {
+    const entity = item.entity;
     const prop = item.prop;
     const operator = item.operator;
     const values = item.values;
-    return ` ${prop.image}${operator.image}${values.image}`;
+    return ` ${entity.image}.${prop.image}${operator.image}${values.image}`;
   }
 }
 

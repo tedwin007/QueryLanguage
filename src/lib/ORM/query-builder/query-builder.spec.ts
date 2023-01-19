@@ -18,9 +18,9 @@ describe('QueryBuilderClass', () => {
       queryResult = ql.visit(parser.query$());
     })
 
-    it('buildQuery should return "select * from Test where prop_one=1"', function () {
+    it('buildQuery should return a valid (simple) query', function () {
       const sqlSelectStatement = ql.buildQuery(queryResult).sqlSelectStatement;
-      expect(sqlSelectStatement).toEqual("select * from Test where prop_one=1")
+      expect(sqlSelectStatement).toEqual("SELECT * FROM Test WHERE Test.prop_one=1")
     })
   })
 
@@ -33,9 +33,9 @@ describe('QueryBuilderClass', () => {
       queryResult = ql.visit(parser.query$());
     })
 
-    it('buildQuery should return "select * from Test where prop_one=1"', function () {
+    it('buildQuery should return a valid query', function () {
       const sqlSelectStatement = ql.buildQuery(queryResult).sqlSelectStatement;
-      expect(sqlSelectStatement).toEqual('select * from Test where prop_one=1 And prop_two=1')
+      expect(sqlSelectStatement).toEqual('SELECT * FROM Test WHERE Test.prop_one=1 And Test.prop_two=1')
     })
   })
 });
