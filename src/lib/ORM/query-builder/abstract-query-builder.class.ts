@@ -2,8 +2,8 @@ import { DataSource } from "typeorm";
 import { Visitor } from "../../visitor/visitor";
 import { VisitedStatement } from "../../visitor/visitor.interfaces";
 
-export abstract class AbstractQueryBuilder extends Visitor {
-    abstract buildQuery(statements: VisitedStatement[])
+export abstract class AbstractQueryBuilder<OUT> extends Visitor {
+    abstract buildQuery(statements: VisitedStatement[]): OUT
 
     constructor(protected dataSource: DataSource) {
         super();
@@ -12,6 +12,4 @@ export abstract class AbstractQueryBuilder extends Visitor {
         }
         this.validateVisitor();
     }
-
-
 }

@@ -1,4 +1,4 @@
-import { DataSource, ObjectLiteral, SelectQueryBuilder, EntityTarget, Entity } from 'typeorm';
+import { DataSource, EntityTarget } from 'typeorm';
 import { VisitedStatement } from "../../visitor/visitor.interfaces";
 import { AbstractQueryBuilder } from './abstract-query-builder.class';
 export interface BuildQueryResponse {
@@ -13,7 +13,7 @@ export interface BuildQueryResponse {
 // also possible to auto-generate typeScript (ORM) types inferred from you DB 
 // Ideas for later development :
 //    - use the FilterManger package with typeORM to validate entities props (some issues are open on typeORM's github) 
-export class QueryBuilderClass extends AbstractQueryBuilder {
+export class QueryBuilderClass extends AbstractQueryBuilder<BuildQueryResponse> {
 
   constructor(dataSource: DataSource, private entity: EntityTarget<any>) {
     super(dataSource);

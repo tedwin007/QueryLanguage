@@ -1,13 +1,17 @@
+import { ILexingResult } from "chevrotain";
 import { lexer } from "../../lexer/lexer";
 import { parser } from "../../parser/parser";
 import { Test } from "../entities/Test";
 import { QueryBuilderClass } from "./query-builder.class";
+import { VisitedStatement } from './../../visitor/visitor.interfaces'
+import * as jasmin from 'jasmine';
+
 describe('QueryBuilderClass', () => {
   let ql: QueryBuilderClass;
   let complexStatement: string;
   let simpleStatement: string;
-  let lexingResult;
-  let queryResult;
+  let lexingResult: ILexingResult;
+  let queryResult: VisitedStatement[];
 
   describe('Simple Statement', () => {
     beforeEach(() => {
@@ -18,7 +22,13 @@ describe('QueryBuilderClass', () => {
       queryResult = ql.visit(parser.query$());
     })
 
-    it('buildQuery should return a valid (simple) query', function () {
+    it('QueryBuilder instance should exists', function () {
+      const spy = jasmine.createSpy('validateVisitor', QueryBuilderClass.prototype.validateVisitor);
+      expect(ql).toBeDefined();
+      expect(spy).toHaveBeenCalled();
+    })
+
+    it('BuildQuery should return a valid (simple) query', function () {
       const sqlSelectStatement = ql.buildQuery(queryResult).sqlSelectStatement;
       expect(sqlSelectStatement).toEqual("SELECT * FROM Test WHERE Test.prop_one=1")
     })
@@ -35,7 +45,7 @@ describe('QueryBuilderClass', () => {
 
     it('buildQuery should return a valid query', function () {
       const sqlSelectStatement = ql.buildQuery(queryResult).sqlSelectStatement;
-      expect(sqlSelectStatement).toEqual('SELECT * FROM Test WHERE Test.prop_one=1 And Test.prop_two=1')
+      expect(sqlSelectStatement).toEqual('SELECT * FROM Test WHERE Test.prop_one=1 And Test.prop_two=1');
     })
   })
 });
