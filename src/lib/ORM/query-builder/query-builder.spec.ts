@@ -28,8 +28,23 @@ describe('QueryBuilderClass', () => {
       expect(sqlSelectStatement).toEqual(expected)
     })
   })
-
   describe('Complex Statement', () => {
+
+    describe('Or', () => {
+      beforeEach(() => {
+        complexStatement = "(Test prop_one = '1') OR (Test prop_two = '1')";
+        ({ ql, queryResult } = init(ql, complexStatement, lexingResult, queryResult));
+      })
+
+      it('buildQuery should return a valid query', () => {
+        const sqlSelectStatement = ql.buildQuery(queryResult).sqlSelectStatement;
+        const expected = 'SELECT * FROM Test WHERE Test.prop_one=1 OR Test.prop_two=1';
+        expect(sqlSelectStatement).toEqual(expected);
+      })
+    })
+
+    describe('And', () => {
+      describe('Complex Statement', () => {
     beforeEach(() => {
       complexStatement = "(Test prop_one = '1') And (Test prop_two = '1')";
       ({ ql, queryResult } = init(ql, complexStatement, lexingResult, queryResult));
@@ -40,20 +55,22 @@ describe('QueryBuilderClass', () => {
       const expected = 'SELECT * FROM Test WHERE Test.prop_one=1 And Test.prop_two=1';
       expect(sqlSelectStatement).toEqual(expected);
     })
-  })
 
-  describe('Complex statement with two different entities', () => {
-    beforeEach(() => {
-      complexStatement = "(Test prop_one = '1') And (User prop_two = '1')";
-      ({ ql, queryResult } = init(ql, complexStatement, lexingResult, queryResult));
-    })
+      describe('With two different entities', () => {
+        beforeEach(() => {
+          complexStatement = "(Test prop_one = '1') And (User prop_two = '1')";
+          ({ ql, queryResult } = init(ql, complexStatement, lexingResult, queryResult));
+        })
 
-    it('BuildQuery method should return a valid query', () => {
-      const sqlSelectStatement = ql.buildQuery(queryResult).sqlSelectStatement;
-      const expected = 'SELECT * FROM Test WHERE Test.prop_one=1 And User.prop_two=1';
-      expect(sqlSelectStatement).toEqual(expected);
+        it('BuildQuery method should return a valid query', () => {
+          const sqlSelectStatement = ql.buildQuery(queryResult).sqlSelectStatement;
+          const expected = 'SELECT * FROM Test WHERE Test.prop_one=1 And User.prop_two=1';
+          expect(sqlSelectStatement).toEqual(expected);
+        })
+      })
     })
-  })
+    })
+  });
 });
 
 function init(ql: QueryBuilderClass, statement: string, lexingResult: ILexingResult, queryResult: VisitedStatement[]) {
