@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
 import { DataSourceOptions } from "typeorm/data-source/DataSourceOptions";
+import { Test } from '../entities/Test';
 
 export type DSOptions = Exclude<DataSourceOptions, "MongoConnectionOptions">;
 

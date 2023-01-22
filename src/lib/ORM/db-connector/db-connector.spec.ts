@@ -1,5 +1,6 @@
 import { DSOptions, createDataSource } from "./db-connector";
 import { DataSource } from "typeorm";
+import path = require("path");
 
 describe("db-connector", () => {
   let DS: Promise<DataSource | unknown>;
@@ -9,7 +10,7 @@ describe("db-connector", () => {
     port: 3306,
     username: "test",
     password: "test",
-    database: "test"
+    database: "test",
   };
 
   beforeEach(() => {

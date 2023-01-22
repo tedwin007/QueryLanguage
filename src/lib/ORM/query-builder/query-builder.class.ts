@@ -1,6 +1,11 @@
-import { DataSource, EntityTarget } from 'typeorm';
+import { DataSource, EntityMetadata, EntityTarget, Entity } from 'typeorm';
 import { VisitedStatement } from "../../visitor/visitor.interfaces";
 import { AbstractQueryBuilder } from './abstract-query-builder.class';
+import { lexer } from '../../lexer/lexer';
+import { parser } from '../../parser/parser';
+import { ParserRules } from '../../parser/parser.enum';
+import { LexerToken } from '../../lexer/lexer.enum';
+import { ISyntacticContentAssistPath } from 'chevrotain';
 export interface BuildQueryResponse {
   execute: () => Promise<any>;
   sqlSelectStatement: string;
@@ -17,6 +22,30 @@ export class QueryBuilderClass extends AbstractQueryBuilder<BuildQueryResponse> 
 
   constructor(dataSource: DataSource, private entity: EntityTarget<any>) {
     super(dataSource);
+  }
+
+  getAutoCompleteOptions(text: string): string[] {
+    const { tokens } = lexer.tokenize(text)
+    const entity = tokens[1]?.image;
+    return parser.computeContentAssist(ParserRules.statement, tokens)
+      .map(this.toSuggestedResult(entity))
+  }
+
+  private toSuggestedResult(entity: string): (a: ISyntacticContentAssistPath) => any {
+    return (token: ISyntacticContentAssistPath) => {
+      const tokenName = token.nextTokenType.name as keyof typeof LexerToken
+      switch (tokenName) {
+        case LexerToken.EndStatement:
+          return ')'
+        case LexerToken.StartStatement:
+          return '(';
+        case LexerToken.Identifier:
+          // todo: EntitiesNameList
+          return entity && this.getMetaDataOf(entity)?.propertiesMap || '<EntitiesNameList>';
+        default:
+          return tokenName
+      }
+    }
   }
 
   buildQuery(statements: VisitedStatement[]): BuildQueryResponse {
@@ -57,6 +86,11 @@ export class QueryBuilderClass extends AbstractQueryBuilder<BuildQueryResponse> 
     const operator = item.operator;
     const values = item.values;
     return ` ${entity.image}.${prop.image}${operator.image}${values.image}`;
+  }
+
+  // todo: explore EntityMetadata
+  private getMetaDataOf(entityName: string): EntityMetadata | null {
+    return this.dataSource?.manager?.connection?.entityMetadatas?.find(x => x.tableName === entityName) || null;
   }
 }
 

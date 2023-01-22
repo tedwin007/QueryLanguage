@@ -4,6 +4,7 @@ import { parser } from "../../parser/parser";
 import { Test } from "../entities/Test";
 import { QueryBuilderClass } from "./query-builder.class";
 import { VisitedStatement } from './../../visitor/visitor.interfaces'
+import { ParserRules } from "../../parser/parser.enum";
 
 describe('QueryBuilderClass', () => {
   let ql: QueryBuilderClass;
@@ -45,10 +46,10 @@ describe('QueryBuilderClass', () => {
 
     describe('And', () => {
       describe('Complex Statement', () => {
-    beforeEach(() => {
-      complexStatement = "(Test prop_one = '1') And (Test prop_two = '1')";
-      ({ ql, queryResult } = init(ql, complexStatement, lexingResult, queryResult));
-    })
+        beforeEach(() => {
+          complexStatement = "(Test prop_one = '1') And (Test prop_two = '1')";
+          ({ ql, queryResult } = init(ql, complexStatement, lexingResult, queryResult));
+        })
 
     it('buildQuery should return a valid query', () => {
       const sqlSelectStatement = ql.buildQuery(queryResult).sqlSelectStatement;
@@ -71,6 +72,39 @@ describe('QueryBuilderClass', () => {
     })
     })
   });
+
+  describe('getAutoCompleteOptions', () => {
+    beforeEach(() => {
+      ({ ql, queryResult } = init(ql, simpleStatement, lexingResult, queryResult));
+    })
+
+    it('Should return ' + ParserRules.values + ' options', () => {
+      const actual = ql.getAutoCompleteOptions("(Test prop_one = ");
+      const expected = ['NumberLiteral', '<EntitiesNameList>', 'True', 'False', 'Null'];
+      expect(actual).toEqual(expected)
+    })
+
+    it('Should return ' + ParserRules.operator + ' options', () => {
+      const actual = ql.getAutoCompleteOptions("(Test prop_one ");
+      const expected = ['GreaterThan', 'LessThan', 'Equal', 'In'];
+      expect(actual).toEqual(expected)
+    })
+
+    it('Should return "< EntitiesNameList >" token ', () => {
+      const actual = ql.getAutoCompleteOptions("(");
+      expect(actual).toEqual(['<EntitiesNameList>'])
+    })
+
+    it('Should return starting statement token "("', () => {
+      const actual = ql.getAutoCompleteOptions(" ");
+      expect(actual).toEqual(['('])
+    })
+
+    it('Should return closing statement token ")"', () => {
+      const actual = ql.getAutoCompleteOptions("(Test prop_one = 2 ");
+      expect(actual).toEqual([')'])
+    })
+  })
 });
 
 function init(ql: QueryBuilderClass, statement: string, lexingResult: ILexingResult, queryResult: VisitedStatement[]) {

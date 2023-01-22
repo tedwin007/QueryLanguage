@@ -20,6 +20,11 @@ import { ParserRules } from "./parser.enum";
 
 export class QlParser extends CstParser {
 
+    constructor(options?: IParserConfig) {
+        super(allTokens, options);
+        this.performSelfAnalysis();
+    }
+
     values$ = this.RULE(ParserRules.values, () => {
         this.OR([
             { ALT: () => this.CONSUME(NumberLiteral) },
@@ -69,11 +74,6 @@ export class QlParser extends CstParser {
             });
         });
     });
-
-    constructor(options?: IParserConfig) {
-        super(allTokens, options);
-        this.performSelfAnalysis();
-    }
 }
 
 export const parser = new QlParser()
