@@ -35,8 +35,7 @@ export class QueryBuilderClass extends AbstractQueryBuilder<BuildQueryResponse> 
 
 		for (let i = 1; i < statementList.length; i++) {
 			const currentItem = statementList[i];
-			sqlSelectStatement +=
-				' ' +
+			sqlSelectStatement +=	' ' +
 				(this.hasConjunction(statementList, i) ? currentItem?.conjunctionOpt?.image : this.getQueryCondition(currentItem, currentItem.entity.image));
 		}
 		return sqlSelectStatement;

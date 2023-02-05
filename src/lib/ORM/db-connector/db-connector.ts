@@ -2,7 +2,7 @@
 import { DataSource } from 'typeorm';
 import { DataSourceOptions } from 'typeorm/data-source/DataSourceOptions';
 require('dotenv').config();
-const { HOST = 'localhost', DB_NAME = 'dbName', USER_NAME = 'admin', PASSWORD = 'psw', DB_TYPE = 'mysql' } = process.env;
+const { HOST = 'localhost', DB_NAME = 'dbName', USER_NAME = 'admin', PASSWORD = 'psw', DB_TYPE = 'mysql' } = process?.env;
 
 const defaultOptions = {
 	// todo: fix dbType
