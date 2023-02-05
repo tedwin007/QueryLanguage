@@ -17,7 +17,7 @@ describe('Lexer', () => {
 		it('should identify all tokens', () => {
 			const actual = lexer.tokenize(simpleQuery).tokens.map((node) => node.image);
 			expect(actual).toEqual(['(', 'Asset', 'prop', '>', '10', ')']);
-		})
+		});
 
 		// TBD ...
 	});

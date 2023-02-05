@@ -21,8 +21,8 @@ Is being analyzed to see if the query's structure is valid.
 
 future planning:
 
--   validate the existing of entities and their props (not in this package scope)
--   transforming the query into any DB query you use (partially in this package scope)
+- validate the existing of entities and their props (not in this package scope)
+- transforming the query into any DB query you use (partially in this package scope)
 
 more examples :
 

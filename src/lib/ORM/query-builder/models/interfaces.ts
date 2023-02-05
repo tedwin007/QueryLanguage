@@ -1,5 +1,5 @@
 import { ISyntacticContentAssistPath } from 'chevrotain';
-export interface BuildQueryResponse<R=any> {
+export interface BuildQueryResponse<R = any> {
 	execute: () => Promise<R>;
 	sqlSelectStatement: string;
 	getAutoCompleteOptions: () => ISyntacticContentAssistPath[];
