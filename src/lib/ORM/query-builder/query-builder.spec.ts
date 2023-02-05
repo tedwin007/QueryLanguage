@@ -1,5 +1,3 @@
-import { lexer } from "../../lexer/lexer";
-import { parser } from "../../parser/parser";
 import { QueryBuilderClass } from "./query-builder.class";
 
 describe('QueryBuilderClass', () => {

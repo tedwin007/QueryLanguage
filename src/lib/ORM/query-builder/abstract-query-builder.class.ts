@@ -1,8 +1,8 @@
 import _ = require('lodash');
 import { DataSource } from 'typeorm';
 import { Visitor } from "../../visitor/visitor";
-import { VisitedStatement } from "../../visitor/visitor.interfaces";
 import { SimpleEntityDefinition, MappedEntitiesDefinition } from './models/interfaces';
+
 export abstract class AbstractQueryBuilder<OUT> extends Visitor {
     abstract buildQuery(statements: string): OUT
     protected entitiesMetaData: MappedEntitiesDefinition;
@@ -15,6 +15,4 @@ export abstract class AbstractQueryBuilder<OUT> extends Visitor {
         this.validateVisitor();
         this.entitiesMetaData = _.keyBy(entitiesDefinition, 'name') as MappedEntitiesDefinition
     }
-
-
 }

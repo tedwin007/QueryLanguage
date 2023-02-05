@@ -7,7 +7,7 @@ import { BuildQueryResponse, SimpleEntityDefinition } from './models/interfaces'
 import { parser } from '../../parser/parser';
 import { lexer } from '../../lexer/lexer';
 import { ParserRules } from '../../parser/parser.enum';
-import { ISyntacticContentAssistPath } from 'chevrotain';
+
 export class QueryBuilderClass extends AbstractQueryBuilder<BuildQueryResponse> {
   private readonly SQLSelect = `SELECT * FROM`;
   private readonly SQLWhere = `WHERE`;
