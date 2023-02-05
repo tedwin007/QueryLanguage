@@ -1,97 +1,116 @@
-import { DataSource, EntityMetadata, EntityTarget, Entity } from 'typeorm';
-import { VisitedStatement } from "../../visitor/visitor.interfaces";
+import { LexerToken } from './../../lexer/lexer.enum';
+import { DataSource } from 'typeorm';
+import { ValueSignTypeMap } from '../../visitor/visitor.constants';
+import { VisitedNode, VisitedStatement } from "../../visitor/visitor.interfaces";
 import { AbstractQueryBuilder } from './abstract-query-builder.class';
-import { lexer } from '../../lexer/lexer';
+import { BuildQueryResponse, SimpleEntityDefinition } from './models/interfaces';
 import { parser } from '../../parser/parser';
+import { lexer } from '../../lexer/lexer';
 import { ParserRules } from '../../parser/parser.enum';
-import { LexerToken } from '../../lexer/lexer.enum';
 import { ISyntacticContentAssistPath } from 'chevrotain';
-export interface BuildQueryResponse {
-  execute: () => Promise<any>;
-  sqlSelectStatement: string;
-};
-
-// This is a simple example for implement the QueryBuilder layer 
-// this component mitigates between the data (DB) layer and the QueryLanguage (tokenizer-> parser -> visit) 
-// the output  of this layer is a query/result from the DB based on visitor output (VisitedStatement)
-// this layer support typeORM to be used for query validation and for encapsulation..
-// also possible to auto-generate typeScript (ORM) types inferred from you DB 
-// Ideas for later development :
-//    - use the FilterManger package with typeORM to validate entities props (some issues are open on typeORM's github) 
 export class QueryBuilderClass extends AbstractQueryBuilder<BuildQueryResponse> {
+  private readonly SQLSelect = `SELECT * FROM`;
+  private readonly SQLWhere = `WHERE`;
 
-  constructor(dataSource: DataSource, private entity: EntityTarget<any>) {
-    super(dataSource);
+  constructor(dataSource: DataSource, entitiesMetaData: SimpleEntityDefinition[]) {
+    super(dataSource, entitiesMetaData);
   }
 
-  getAutoCompleteOptions(text: string): string[] {
-    const { tokens } = lexer.tokenize(text)
-    const entity = tokens[1]?.image;
-    return parser.computeContentAssist(ParserRules.statement, tokens)
-      .map(this.toSuggestedResult(entity))
-  }
 
-  private toSuggestedResult(entity: string): (a: ISyntacticContentAssistPath) => any {
-    return (token: ISyntacticContentAssistPath) => {
-      const tokenName = token.nextTokenType.name as keyof typeof LexerToken
-      switch (tokenName) {
-        case LexerToken.EndStatement:
-          return ')'
-        case LexerToken.StartStatement:
-          return '(';
-        case LexerToken.Identifier:
-          // todo: EntitiesNameList
-          return entity && this.getMetaDataOf(entity)?.propertiesMap || '<EntitiesNameList>';
-        default:
-          return tokenName
-      }
+  buildQuery(statement: string): BuildQueryResponse {
+    const { tokens } = lexer.tokenize(statement);
+    parser.input = tokens;
+    const queryResult = this.visit(parser.query$());
+    let sqlSelectStatement = this.toSqlQuery(queryResult)
+
+    return {
+      execute: () => this.dataSource.query(sqlSelectStatement),
+      getAutoCompleteOptions: () => parser.computeContentAssist(ParserRules.statement, tokens),
+      sqlSelectStatement,
     }
   }
 
-  buildQuery(statements: VisitedStatement[]): BuildQueryResponse {
-    let sqlSelectStatement = this.getSqlQuery(statements)
-    return {
-      execute: () => this.dataSource.manager.getRepository(this.entity).query(sqlSelectStatement),
-      sqlSelectStatement
-    } 
-  }
+  private toSqlQuery(statementList: VisitedStatement[], sqlSelectStatement = ''): string {
+    const firstStatement = statementList[0]
+    const entity = this.getEntityName(firstStatement)
+    sqlSelectStatement = `${this.SQLSelect} ${entity} ${this.SQLWhere} ${this.getQueryCondition(firstStatement, entity)}`;
 
-  private getSqlQuery(statementList: VisitedStatement[]): string {
-    let sqlSelectStatement = `SELECT * FROM `;
-    statementList.forEach((item, i) => {
-      if (i == 0) {
-        sqlSelectStatement += this.getInitialSelectQuery(item);
-      } else if (this.hasConjunctionOpt(statementList, i)) {
-        sqlSelectStatement += ' ' + statementList[i].conjunctionOpt.image + this.getExpandedQuery(statementList[i + 1]);
-      }
-    })
+    for (let i = 1; i < statementList.length; i++) {
+      const currentItem = statementList[i];
+      sqlSelectStatement += " " + (this.hasConjunction(statementList, i) ?
+        currentItem.conjunctionOpt.image :
+        this.getQueryCondition(currentItem, currentItem.entity.image))
+    }
     return sqlSelectStatement
   }
 
-  private getInitialSelectQuery(item: VisitedStatement): string {
-    const entity = item.entity;
-    const prop = item.prop;
-    const operator = item.operator;
-    const values = item.values;
-    return `${entity.image} WHERE ${entity.image}.${prop.image}${operator.image}${values.image}`;;
+  private getQueryCondition(item: VisitedStatement, entity: string): string {
+    const prop = this.getPropName(entity, item.prop)
+    const operator = this.getOperatorName(entity, prop, item.operator)
+    const values = this.getValues(entity, prop, item.values);
+    return `${entity}.${prop}${operator}${values}`;
   }
 
-  private hasConjunctionOpt(statementList: VisitedStatement[], i: number): boolean {
+  private getValues(entityName: string, propName: string, values: VisitedNode): string {
+    this.validateValues(values, entityName, propName);
+    return values.image;
+  }
+
+  private validateValues(values: VisitedNode, entityName: string, propName: string): never | void {
+    if (!values?.image)
+      throw new Error('getValues method failed (bad input ' + JSON.stringify(values) + ')');
+    switch (this.getPropType(entityName, propName)) {
+      case 'number':
+        if (Number.isNaN(Number(values.image)))
+          throw new Error(values.image + ' should be of type number ');
+    }
+  }
+
+  private getEntityName(item: VisitedStatement): string {
+    const entityName = item.entity.image
+    if (!entityName || !(entityName in this.entitiesMetaData))
+      throw new Error('getEntityName method failed, ' + entityName + ' was not found in the known entities list ');
+    return entityName
+  }
+
+  private getPropName(entityName: string, item: VisitedNode): string {
+    const propName = item?.image
+    if (!propName || !(propName in this.entitiesMetaData[entityName]?.props))
+      throw new Error('getPropName method failed,' + propName + 'does not exists in' + entityName);
+    return propName
+  }
+
+  private getOperatorName(entityName: string, propName: string, item: VisitedNode): string {
+    const operatorName = item?.image;
+    this.validateOperator(operatorName, entityName, propName, item);
+    return operatorName
+  }
+
+  private validateOperator(operatorName: string, entityName: string, propName: string, item: VisitedNode): never | void {
+    if (!operatorName)
+      throw new Error('getOperatorName failed, please provide a valid operator name');
+    const propType = this.getPropType(entityName, propName);
+    const lexerPropType = this.toLexerToken(propType);
+    const validOperatorsList = ValueSignTypeMap.get(lexerPropType);
+    if (!validOperatorsList.includes(item.sign))
+      throw new Error('getOperatorName failed, the operator (' + operatorName + ') is not valid to the give propType (' + propName + ':' + propType + ') ');
+  }
+
+  private getPropType(entityName: string, propName: string): 'string' | 'number' | 'object' {
+    return this.entitiesMetaData[entityName]?.props?.[propName];
+  }
+
+  // todo: fix null
+  private toLexerToken(propType: string): LexerToken {
+    const PrimitiveTypeMapper = {
+      'string': LexerToken.Identifier,
+      'number': LexerToken.NumberLiteral,
+      'object': LexerToken.Null
+    }
+    return PrimitiveTypeMapper[propType] || LexerToken.Null;
+  }
+
+  private hasConjunction(statementList: VisitedStatement[], i: number): boolean {
     return (statementList.length > (i + 1)) && (statementList.length % 2 !== 0) && (i % 2 !== 0);
   }
-
-  private getExpandedQuery(item: VisitedStatement): string {
-    const entity = item.entity;
-    const prop = item.prop;
-    const operator = item.operator;
-    const values = item.values;
-    return ` ${entity.image}.${prop.image}${operator.image}${values.image}`;
-  }
-
-  // todo: explore EntityMetadata
-  private getMetaDataOf(entityName: string): EntityMetadata | null {
-    return this.dataSource?.manager?.connection?.entityMetadatas?.find(x => x.tableName === entityName) || null;
-  }
 }
-
-

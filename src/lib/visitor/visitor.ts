@@ -1,6 +1,6 @@
 import { parser } from "../parser/parser";
 import { CstNode } from "chevrotain";
-import { ValueSignTypeMap } from "./visitor.consts";
+import { ValueSignTypeMap } from "./visitor.constants";
 import { IToken } from "@chevrotain/types";
 import { LexerToken } from "../lexer/lexer.enum";
 import { QLNode, TokenNodeKey, VisitedNode, VisitedStatement } from "./visitor.interfaces";
@@ -67,13 +67,13 @@ export class Visitor extends BaseVisitor {
    * @private
    */
   private isValidValueSign = (sign: LexerToken, value: LexerToken): boolean => !!ValueSignTypeMap.get(value)?.includes(sign);
-  private visitEntityProp = (prop: IToken): VisitedNode => ({ image: prop.image, sign: prop.tokenType.name });
+  private visitEntityProp = (prop: IToken): VisitedNode => ({ image: prop.image, sign: prop.tokenType.name as LexerToken });
   private conjunctionOpt$ = (ctx: QLNode): VisitedNode => this.visitQLNode(ctx);
   private operator$ = (ctx: QLNode): VisitedNode => this.visitQLNode(ctx);
   private values$ = (ctx: any): VisitedNode => this.visitQLNode(ctx);
 
   private visitQLNode = (node: QLNode): VisitedNode => {
-    const sign = Object.keys(node)[0] as TokenNodeKey;
+    const sign = Object.keys(node)[0] as LexerToken;
     const image = node[sign][0].image;
     return { image, sign };
   };

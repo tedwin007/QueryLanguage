@@ -1,9 +1,16 @@
 import { DataSource } from "typeorm";
 import { DataSourceOptions } from "typeorm/data-source/DataSourceOptions";
-import { Test } from '../entities/Test';
+require('dotenv').config();
+const { HOST, DB_NAME, USER_NAME, PASSWORD, DB_TYPE } = process.env;
 
-export type DSOptions = Exclude<DataSourceOptions, "MongoConnectionOptions">;
-
-export function createDataSource(options: DSOptions): Promise<void | DataSource> {
-  return (new DataSource(options)).initialize()
+const defaultOptions = {
+  type: <any>DB_TYPE,
+  host: HOST,
+  port: 3306,
+  username: USER_NAME,
+  password: PASSWORD,
+  database: DB_NAME,
+};
+export function createDataSource(options: Partial<DataSourceOptions> = defaultOptions): Promise<void | DataSource> {
+  return (new DataSource({ ...defaultOptions, ...options } as DataSourceOptions)).initialize()
 }

@@ -1,6 +1,6 @@
 import { ParserRules } from "../parser/parser.enum";
 import { CstNode } from "chevrotain";
-import { LexerToken } from "../lexer/lexer.enum";
+import { LexerToken } from '../lexer/lexer.enum';
 import { IToken } from "@chevrotain/types";
 
 export type RuleNodeKey = keyof typeof ParserRules
@@ -10,7 +10,7 @@ export type TokenNode = { [k in keyof typeof LexerToken]: IToken[] }
 export type QLNode = RuleNode & TokenNode
 
 export interface VisitedNode {
-  sign: string,
+  sign: LexerToken;
   image: string
 }
 

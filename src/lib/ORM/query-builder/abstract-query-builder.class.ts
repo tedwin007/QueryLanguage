@@ -1,15 +1,20 @@
-import { DataSource } from "typeorm";
+import _ = require('lodash');
+import { DataSource } from 'typeorm';
 import { Visitor } from "../../visitor/visitor";
 import { VisitedStatement } from "../../visitor/visitor.interfaces";
-
+import { SimpleEntityDefinition, MappedEntitiesDefinition } from './models/interfaces';
 export abstract class AbstractQueryBuilder<OUT> extends Visitor {
-    abstract buildQuery(statements: VisitedStatement[]): OUT
+    abstract buildQuery(statements: string): OUT
+    protected entitiesMetaData: MappedEntitiesDefinition;
 
-    constructor(protected dataSource: DataSource) {
+    constructor(protected dataSource: DataSource, entitiesDefinition: SimpleEntityDefinition[]) {
         super();
         if (!dataSource) {
             throw "You need create a valid DataSource instance";
         }
         this.validateVisitor();
+        this.entitiesMetaData = _.keyBy(entitiesDefinition, 'name') as MappedEntitiesDefinition
     }
+
+
 }
