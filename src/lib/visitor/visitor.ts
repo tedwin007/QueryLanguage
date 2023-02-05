@@ -3,7 +3,7 @@ import { CstNode } from 'chevrotain';
 import { ValueSignTypeMap } from './visitor.constants';
 import { IToken } from '@chevrotain/types';
 import { LexerToken } from '../lexer/lexer.enum';
-import { QLNode, TokenNodeKey, VisitedNode, VisitedStatement } from './visitor.interfaces';
+import { QLNode, VisitedNode, VisitedStatement } from './visitor.interfaces';
 
 const BaseVisitor = parser.getBaseCstVisitorConstructor();
 
@@ -71,7 +71,7 @@ export class Visitor extends BaseVisitor {
 	});
 	private conjunctionOpt$ = (ctx: QLNode): VisitedNode => this.visitQLNode(ctx);
 	private operator$ = (ctx: QLNode): VisitedNode => this.visitQLNode(ctx);
-	private values$ = (ctx: any): VisitedNode => this.visitQLNode(ctx);
+	private values$ = (ctx: QLNode): VisitedNode => this.visitQLNode(ctx);
 
 	private visitQLNode = (node: QLNode): VisitedNode => {
 		const sign = Object.keys(node)[0] as LexerToken;

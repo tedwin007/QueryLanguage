@@ -27,7 +27,7 @@ describe('Parser', () => {
 			const statement = '(Asset 1 > 10)';
 			try {
 				expect(parseInput(statement, lexer)).not.toBeTrue();
-			} catch (err: any) {
+			} catch (err) {
 				expect(err.message).toEqual('Failed to parse the input');
 			}
 		});

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { QueryBuilderClass } from './query-builder.class';
 
 describe('QueryBuilderClass', () => {

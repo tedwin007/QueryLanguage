@@ -15,7 +15,7 @@ describe('Lexer', () => {
 
 	describe('Given a simpleQuery (' + simpleQuery + ')', () => {
 		it('should identify all tokens', () => {
-			let actual = lexer.tokenize(simpleQuery).tokens.map((node) => node.image);
+			const actual = lexer.tokenize(simpleQuery).tokens.map((node) => node.image);
 			expect(actual).toEqual(['(', 'Asset', 'prop', '>', '10', ')']);
 		})
 
