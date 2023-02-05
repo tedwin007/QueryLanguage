@@ -1,6 +1,6 @@
 import { DataSource } from "typeorm";
 import { DataSourceOptions } from "typeorm/data-source/DataSourceOptions";
-require('dotenv').config();
+require("dotenv").config();
 const { HOST, DB_NAME, USER_NAME, PASSWORD, DB_TYPE } = process.env;
 
 const defaultOptions = {
@@ -11,6 +11,11 @@ const defaultOptions = {
   password: PASSWORD,
   database: DB_NAME,
 };
-export function createDataSource(options: Partial<DataSourceOptions> = defaultOptions): Promise<void | DataSource> {
-  return (new DataSource({ ...defaultOptions, ...options } as DataSourceOptions)).initialize()
+export function createDataSource(
+  options: Partial<DataSourceOptions> = defaultOptions
+): Promise<void | DataSource> {
+  return new DataSource({
+    ...defaultOptions,
+    ...options,
+  } as DataSourceOptions).initialize();
 }

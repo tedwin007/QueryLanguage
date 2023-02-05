@@ -3,25 +3,22 @@
     "experimentalDecorators": true,
     "target": "ES6",
     "module": "commonjs",
-    "lib": ["es2019"    ],
+    "lib": ["es2019"],
     "declaration": true,
     "outDir": "main",
     "importHelpers": true,
     "sourceMap": true,
     "strict": false,
-    "types": [
-      "node"
-    ],
-    "esModuleInterop": true, 
+    "types": ["node"],
+    "esModuleInterop": true,
     "resolveJsonModule": true
   },
   "include": [
     "src/*.ts",
-    "src/**/*.ts"
-, "src/lib/ORM/scripts/generate-types.js"  ],
-  "exclude": [
-    "node_modules/**"
+    "src/**/*.ts",
+    "src/lib/ORM/scripts/generate-types.js"
   ],
+  "exclude": ["node_modules/**"],
   "typedocOptions": {
     "entryPoints": ["src/*"],
     "out": "docs"

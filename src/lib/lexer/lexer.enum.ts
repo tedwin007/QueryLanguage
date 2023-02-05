@@ -12,6 +12,5 @@ export enum LexerToken {
   False = "False",
   Null = "Null",
   WhiteSpace = "WhiteSpace",
-  NumberLiteral = "NumberLiteral"
+  NumberLiteral = "NumberLiteral",
 }
-

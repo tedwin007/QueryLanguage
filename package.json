@@ -4,6 +4,7 @@
   "description": "Query Language",
   "main": "main/index.js",
   "scripts": {
+    "format": "npx prettier --write .",
     "test": "jasmine --config=jasmine.json",
     "coverage": "nyc npm run test && nyc report --reporter=html",
     "generate-types": "node ./src/lib/ORM/scripts/generate-types.js",

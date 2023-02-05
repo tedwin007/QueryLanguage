@@ -4,5 +4,5 @@ export enum ParserRules {
   query = "query$",
   operator = "operator$",
   conjunctionOpt = "conjunctionOpt$",
-  statement = "statement$"
+  statement = "statement$",
 }

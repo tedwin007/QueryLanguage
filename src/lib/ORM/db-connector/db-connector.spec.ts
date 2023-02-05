@@ -26,7 +26,3 @@ describe("db-connector", () => {
     expect(DataSource.prototype.initialize).toHaveBeenCalled();
   });
 });
-
-
-
-

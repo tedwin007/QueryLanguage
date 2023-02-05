@@ -1,7 +1,7 @@
 # QueryLanguage - [Work-in-Progress]
 
 for auto generate type from DB run
-```npm run generate-types```
+`npm run generate-types`
 
 this project is the second part of a larger project aiming to provide
 an easy to implement solution for filtering and query data in a JQL like style
@@ -10,6 +10,7 @@ part one: "Filter Manger"
 https://github.com/tedwin007/FilterManger
 
 ## Analyze query
+
 Example: the query
 
 ```
@@ -25,18 +26,17 @@ future planning:
 
 more examples :
 
-``(Asset 1 > 10)``
+`(Asset 1 > 10)`
 
 will throw the following msg due to wrong statement structure
 (entity prop cannot be numeric)
 
-``
-MismatchedTokenException: Expecting token of type --> Identifier <-- but found --> '1' <--
-``
+`MismatchedTokenException: Expecting token of type --> Identifier <-- but found --> '1' <--`
 
 ## Query Builder
+
 included in this project is TypeORM (https://typeorm.io/) and (typeorm-model-generator) libs
-this enables you to auto-generate TS types (TypeORM specifically) from your DB  by running
- ``` npm run generate-types ``` 
- You can use .env file to configure your db connection 
- or you simply follow the CLI steps
+this enables you to auto-generate TS types (TypeORM specifically) from your DB by running
+`npm run generate-types`
+You can use .env file to configure your db connection
+or you simply follow the CLI steps

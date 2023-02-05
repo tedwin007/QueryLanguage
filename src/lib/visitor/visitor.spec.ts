@@ -21,11 +21,15 @@ describe("Visitor", () => {
     const complexStatement = "(Asset prop > 10) and (User age > 1)";
 
     it("should transform " + simpleStatement + " successfully", () => {
-      expect(visitInput(simpleStatement, lexer)).toEqual(expectedSimpleStatement);
+      expect(visitInput(simpleStatement, lexer)).toEqual(
+        expectedSimpleStatement
+      );
     });
 
     it("should transform " + complexStatement + " successfully", () => {
-      expect(visitInput(complexStatement, lexer)).toEqual(expectedComplexStatement);
+      expect(visitInput(complexStatement, lexer)).toEqual(
+        expectedComplexStatement
+      );
     });
   });
 });
@@ -44,24 +48,27 @@ export function visitInput(text: string, lexer: Lexer) {
 }
 
 //  ==== Mocks &  Const =====
-const expectedSimpleStatement: VisitedStatement[] = [{
-  entity: { image: "Asset", sign: LexerToken.Identifier },
-  prop: { image: "prop", sign: LexerToken.Identifier },
-  operator: { image: ">", sign: LexerToken.GreaterThan },
-  values: { image: "10", sign: LexerToken.NumberLiteral }
-}];
+const expectedSimpleStatement: VisitedStatement[] = [
+  {
+    entity: { image: "Asset", sign: LexerToken.Identifier },
+    prop: { image: "prop", sign: LexerToken.Identifier },
+    operator: { image: ">", sign: LexerToken.GreaterThan },
+    values: { image: "10", sign: LexerToken.NumberLiteral },
+  },
+];
 
-const expectedComplexStatement = [{
-  entity: { image: "Asset", sign: "Identifier" },
-  prop: { image: "prop", sign: "Identifier" },
-  operator: { image: ">", sign: "GreaterThan" },
-  values: { image: "10", sign: "NumberLiteral" }
-},
+const expectedComplexStatement = [
+  {
+    entity: { image: "Asset", sign: "Identifier" },
+    prop: { image: "prop", sign: "Identifier" },
+    operator: { image: ">", sign: "GreaterThan" },
+    values: { image: "10", sign: "NumberLiteral" },
+  },
   { conjunctionOpt: { image: "and", sign: "And" } },
   {
     entity: { image: "User", sign: "Identifier" },
     prop: { image: "age", sign: "Identifier" },
     operator: { image: ">", sign: "GreaterThan" },
-    values: { image: "1", sign: "NumberLiteral" }
-  }
+    values: { image: "1", sign: "NumberLiteral" },
+  },
 ];

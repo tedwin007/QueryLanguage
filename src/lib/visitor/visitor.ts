@@ -3,12 +3,16 @@ import { CstNode } from "chevrotain";
 import { ValueSignTypeMap } from "./visitor.constants";
 import { IToken } from "@chevrotain/types";
 import { LexerToken } from "../lexer/lexer.enum";
-import { QLNode, TokenNodeKey, VisitedNode, VisitedStatement } from "./visitor.interfaces";
+import {
+  QLNode,
+  TokenNodeKey,
+  VisitedNode,
+  VisitedStatement,
+} from "./visitor.interfaces";
 
 const BaseVisitor = parser.getBaseCstVisitorConstructor();
 
 export class Visitor extends BaseVisitor {
-
   constructor() {
     super();
     this.validateVisitor();
@@ -28,12 +32,14 @@ export class Visitor extends BaseVisitor {
         current.push(this.visit(next));
         if (ctx.conjunctionOpt?.[index]) {
           const newLocal = {
-            conjunctionOpt: this.visit(ctx.conjunctionOpt[index])
-          }
+            conjunctionOpt: this.visit(ctx.conjunctionOpt[index]),
+          };
           current.push(newLocal as any);
         }
         return current;
-      }, []);
+      },
+      []
+    );
   }
 
   statement$(ctx: QLNode): VisitedStatement {
@@ -54,7 +60,7 @@ export class Visitor extends BaseVisitor {
       entity,
       prop: this.visitEntityProp(prop),
       operator: visitedSign,
-      values: visitedValues
+      values: visitedValues,
     };
   }
 
@@ -66,8 +72,12 @@ export class Visitor extends BaseVisitor {
    * @param value
    * @private
    */
-  private isValidValueSign = (sign: LexerToken, value: LexerToken): boolean => !!ValueSignTypeMap.get(value)?.includes(sign);
-  private visitEntityProp = (prop: IToken): VisitedNode => ({ image: prop.image, sign: prop.tokenType.name as LexerToken });
+  private isValidValueSign = (sign: LexerToken, value: LexerToken): boolean =>
+    !!ValueSignTypeMap.get(value)?.includes(sign);
+  private visitEntityProp = (prop: IToken): VisitedNode => ({
+    image: prop.image,
+    sign: prop.tokenType.name as LexerToken,
+  });
   private conjunctionOpt$ = (ctx: QLNode): VisitedNode => this.visitQLNode(ctx);
   private operator$ = (ctx: QLNode): VisitedNode => this.visitQLNode(ctx);
   private values$ = (ctx: any): VisitedNode => this.visitQLNode(ctx);
@@ -80,5 +90,3 @@ export class Visitor extends BaseVisitor {
 }
 
 export const visitor = new Visitor();
-
-
