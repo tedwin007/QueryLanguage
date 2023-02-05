@@ -12,14 +12,13 @@ import {
   NumberLiteral,
   Or,
   StartStatement,
-  True
+    True,
 } from "../lexer/lexer";
 import { CstParser } from "chevrotain";
 import { IParserConfig } from "@chevrotain/types";
 import { ParserRules } from "./parser.enum";
 
 export class QlParser extends CstParser {
-
     constructor(options?: IParserConfig) {
         super(allTokens, options);
         this.performSelfAnalysis();
@@ -31,18 +30,18 @@ export class QlParser extends CstParser {
             { ALT: () => this.CONSUME(Identifier) },
             { ALT: () => this.CONSUME(True) },
             { ALT: () => this.CONSUME(False) },
-            { ALT: () => this.CONSUME(Null) }
-        ]);
-    });
+        { ALT: () => this.CONSUME(Null) },
+    ]);
+  });
 
     operator$ = this.RULE(ParserRules.operator, () => {
         this.OR([
             { ALT: () => this.CONSUME(GreaterThan) },
             { ALT: () => this.CONSUME(LessThan) },
             { ALT: () => this.CONSUME(Equal) },
-            { ALT: () => this.CONSUME(In) }
-        ]);
-    });
+        { ALT: () => this.CONSUME(In) },
+    ]);
+  });
 
     subQuery$ = this.RULE(ParserRules.subQuery, () => {
         this.CONSUME(Identifier);
@@ -54,9 +53,9 @@ export class QlParser extends CstParser {
         this.OR([
             { ALT: () => this.CONSUME(And) },
             { ALT: () => this.CONSUME(Or) },
-            { ALT: () => this.CONSUME(In) }
-        ]);
-    });
+        { ALT: () => this.CONSUME(In) },
+    ]);
+  });
 
     statement$ = this.RULE(ParserRules.statement, () => {
         this.CONSUME(StartStatement);
@@ -76,6 +75,4 @@ export class QlParser extends CstParser {
     });
 }
 
-export const parser = new QlParser()
-
-
+export const parser = new QlParser();
