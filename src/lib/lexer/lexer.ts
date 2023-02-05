@@ -15,11 +15,11 @@ export const EndStatement = createToken({
 });
 export const GreaterThan = createToken({
 	name: LexerToken.GreaterThan,
-	pattern: /\>/,
+	pattern: />/,
 });
 export const LessThan = createToken({
 	name: LexerToken.LessThan,
-	pattern: /\</,
+	pattern: /</,
 });
 export const Equal = createToken({
 	name: LexerToken.Equal,
