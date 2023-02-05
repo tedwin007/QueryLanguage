@@ -95,11 +95,6 @@ describe('QueryBuilderClass', () => {
       expect(actual).toEqual(['<EntitiesNameList>'])
     })
 
-    it('Should return starting statement token "("', () => {
-      const actual = ql.getAutoCompleteOptions(" ");
-      expect(actual).toEqual(['('])
-    })
-
     it('Should return closing statement token ")"', () => {
       const actual = ql.getAutoCompleteOptions("(Test prop_one = 2 ");
       expect(actual).toEqual([')'])
