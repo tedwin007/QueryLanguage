@@ -1,5 +1,4 @@
 import { ISyntacticContentAssistPath } from "chevrotain";
-
 export interface BuildQueryResponse {
     execute: () => Promise<any>;
     sqlSelectStatement: string;
@@ -11,6 +10,5 @@ export interface SimpleEntityDefinition<T = any> {
         [k in keyof T]: 'string' | 'number' | 'object'
     }
 }
-
 
 export type MappedEntitiesDefinition = { [k in SimpleEntityDefinition['name']]: { props: SimpleEntityDefinition['props'] } } & object

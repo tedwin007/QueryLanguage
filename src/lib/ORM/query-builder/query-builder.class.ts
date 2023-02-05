@@ -16,7 +16,6 @@ export class QueryBuilderClass extends AbstractQueryBuilder<BuildQueryResponse> 
     super(dataSource, entitiesMetaData);
   }
 
-
   buildQuery(statement: string): BuildQueryResponse {
     const { tokens } = lexer.tokenize(statement);
     parser.input = tokens;
